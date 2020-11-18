@@ -1,0 +1,44 @@
+* Introduction
+
+  ~ze~ is an open source implimentation of the [[https://zettelkasten.de/][zettelkasten]] method of knowledge
+  management, written in C and following traditional Unix standards. It is
+  meant to be minimal, portable, and fast. If you're looking for a GUI, ~ze~ is
+  not the tool for you.
+
+* Usage
+
+  Here are a few examples of basic usage. For more info, see ~man ze~.
+
+  #+BEGIN_SRC sh
+    ze -n [title]             # make a new note with [title]
+    ze                        # print index note
+    ze [id]                   # print the relevant note
+    ze -r [id]                # remove a note
+    ze -n                     # interactively make a note
+  #+END_SRC
+
+** Installation
+
+   Installation is simple. Either download a tarball, or run ~autoconf -i~ to
+   set up the build system. Then run
+
+   #+BEGIN_SRC sh
+     ./configure
+     make
+     sudo make install
+   #+END_SRC
+   
+** Configuration
+
+   Configuration options (such as the id of the root note) can be changed in the
+   file ~$HOME/.ze/ze.conf~. Again, for more details, see the man pages.
+
+** Contributing
+
+   ~ze~ uses the Linux kernel coding style. As with the kernel itself, breaks
+   are allowed, but only with good reason. The normal
+   - branch
+   - edit
+   - commit
+   - pull
+   workflow of git is prefered.

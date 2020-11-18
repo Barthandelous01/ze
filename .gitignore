@@ -1,0 +1,38 @@
+# This package is controled by the GNU Autotools toolchain.
+
+# Automake
+/Makefile
+/Makefile.in
+src/Makefile
+src/.deps/
+src/Makefile.in
+
+# root directory
+/aclocal.m4
+/autom4te.cache/
+/config.*
+configure
+compile
+depcomp
+install-sh
+missing
+/m4/
+/stamp-h?
+.dirstamp
+
+# build fragments
+*.o
+*.gch
+*.out
+*.dSYM
+*.plist
+*.c~
+src/user_conf.h
+src/cmics
+src/a.out.dSYM/Contents/Info.plist
+a.out
+/build
+
+
+# MacOS Formatting files
+.DS_Store

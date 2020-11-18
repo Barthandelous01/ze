@@ -10,11 +10,12 @@
   Here are a few examples of basic usage. For more info, see ~man ze~.
 
   #+BEGIN_SRC sh
-    ze -n [title]             # make a new note with [title]
     ze                        # print index note
-    ze [id]                   # print the relevant note
+    ze [id]                   # print the note with [id]
     ze -r [id]                # remove a note
     ze -n                     # interactively make a note
+    ze -e [id]                # edit a note
+    ze -l                     # list notes (in a grep-able format)
   #+END_SRC
 
 ** Installation
@@ -31,14 +32,22 @@
 ** Configuration
 
    Configuration options (such as the id of the root note) can be changed in the
-   file ~$HOME/.ze/ze.conf~. Again, for more details, see the man pages.
+   file ~$HOME/.ze/ze.conf~. Again, for more details, see the man pages. ~ze~
+   uses ~$EDITOR~ if an editor is not selected in its config file. It is
+   reccommended to use an editor that can run shell commands (such as vi's ~:!~)
+   to be able to access other notes while writing, for the sake of easier
+   linking.
 
 ** Contributing
 
    ~ze~ uses the Linux kernel coding style. As with the kernel itself, breaks
-   are allowed, but only with good reason. The normal
+   with the style are allowed, but only with good reason.
+
+   The normal
    - branch
    - edit
    - commit
    - pull
-   workflow of git is prefered.
+   workflow of git is prefered for contributions. Branch =master= is used for
+   devlopment; once there are stable releases, snapshots will be on the
+   =releases= branch.

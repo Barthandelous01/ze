@@ -6,8 +6,8 @@
 
 typedef struct id_file {
 	FILE *fd;
-	int id;
-	char filepath[50];
+	unsigned int id;
+	char filepath[PATH_BUFSIZE];
 } id_file;
 static id_file id_fd;
 
@@ -19,6 +19,9 @@ static id_file id_fd;
  * global that the entire id.c file works with. It keeps
  * track of the current ID, as well as the file descriptor
  * associated with it.
+ *
+ * Returns ESUCCESS on success, or a negative code on
+ * error.
  */
 int init_id (char *filepath)
 {
@@ -30,9 +33,9 @@ int init_id (char *filepath)
 	strncpy(id_fd.filepath, filepath, 49);
 	id_fd.filepath[49] = '\0';
 
-	int id_temp;
-	fscanf(id_fd.fd, "%x", id_temp);
-	if (id_temp < 0)
+	unsigned int id_temp = 0;
+	fscanf(id_fd.fd, "%6x", &id_temp);
+	if (id_temp == 0)
 		return -EVAL;
 	else
 		id_fd.id = id_temp;
@@ -45,8 +48,10 @@ int init_id (char *filepath)
  *
  * close_id() shuts down all of the stuff inside of
  * id_fd, writes the ID update, and closes file descriptors.
+ * Returns ESUCCESS on success, or a negative error code
+ * on failure.
  */
-int close_id ()
+int close_id (void)
 {
 	int res1 = fclose(id_fd.fd);
 	if (!res1)
@@ -56,9 +61,49 @@ int close_id ()
 	if (!fd)
 		return -EFILE;
 
-	fprintf(fd, "%x", id_fd.id);
+	fprintf(fd, "%6x", id_fd.id);
 	if (!fclose(fd))
 		return -EFILE;
+
+	return ESUCCESS;
+}
+
+/**
+ * incriment_id() - add to the ID counter
+ *
+ * incriment_id() is basically id_fd.id++, but without having
+ * to directly address the global, and is more obvious to
+ * readers.
+ */
+static inline void incriment_id()
+{
+	id_fd.id++;
+}
+
+/**
+ * get_id_int() - get the current ID integer
+ */
+static inline unsigned int get_id_int()
+{
+	return id_fd.id;
+}
+
+/**
+ * get_id() - get a new ID string
+ * @result_buf: the stack buffer where the result is
+ *              written to
+ *
+ * get_id() is the main userspace function from id. It
+ * returns ESUCCESS on success, or a negative error code on
+ * failure. The resultant char * is written to result_buf.
+ */
+int get_id (char *result_buf)
+{
+	if (!result_buf)
+		return -EMEM;
+
+	sprintf(result_buf, "%6x", get_id_int());
+	incriment_id();
 
 	return ESUCCESS;
 }

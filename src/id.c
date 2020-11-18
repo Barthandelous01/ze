@@ -25,22 +25,22 @@ static id_file id_fd;
  */
 int init_id (char *filepath)
 {
-	FILE *fd_temp = fopen(filepath, "r+");
+	FILE *fd_temp = fopen(filepath, "r");
 	if (!fd_temp)
 		return -EFILE;
 
 	id_fd.fd = fd_temp;
-	strncpy(id_fd.filepath, filepath, 49);
+	strncpy(id_fd.filepath, filepath, PATH_BUFSIZE-1);
 	id_fd.filepath[49] = '\0';
 
 	unsigned int id_temp = 0;
 	fscanf(id_fd.fd, "%6x", &id_temp);
 	if (id_temp == 0)
-		return -EVAL;
+		id_fd.id = 1;
 	else
 		id_fd.id = id_temp;
 
-	return ESUCCESS;
+	return SUCCESS;
 }
 
 /**
@@ -65,7 +65,7 @@ int close_id (void)
 	if (!fclose(fd))
 		return -EFILE;
 
-	return ESUCCESS;
+	return SUCCESS;
 }
 
 /**
@@ -82,6 +82,10 @@ static inline void incriment_id()
 
 /**
  * get_id_int() - get the current ID integer
+ *
+ * get_id_int() returns the current ID ingeter.
+ * The reason for it and increment_id() is to keep from
+ * directly touching a global in a non-sane-way.
  */
 static inline unsigned int get_id_int()
 {
@@ -105,5 +109,5 @@ int get_id (char *result_buf)
 	sprintf(result_buf, "%6x", get_id_int());
 	incriment_id();
 
-	return ESUCCESS;
+	return SUCCESS;
 }

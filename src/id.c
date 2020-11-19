@@ -7,10 +7,30 @@
 typedef struct id_file {
 	FILE *fd;
 	unsigned int id;
-	char filepath[PATH_BUFSIZE];
+	char filepath[2*PATH_BUFSIZE];
 } id_file;
 
 static id_file *id_fd;
+
+/**
+ * home_prefix() - $HOME-prefix a filepath
+ * @postfix: the filepath to prefix. It should
+ *           start with a /
+ * @result: the buffer written into. It is assumed to
+ *          have 2*PATH_BUFSIZE bytes maximum; otherwise,
+ *          data will be lost. However, this should be
+ *          enough for 99.9% of use cases.
+ *
+ * home_prefix() attempts to accomplish it's task
+ * entirely without using the heap,
+ * essentially canonizalizing filenames.
+ */
+static void home_prefix(char *postfix, char *result)
+{
+	strncpy(result, getenv("HOME"), PATH_BUFSIZE);
+	strncat(result, postfix, PATH_BUFSIZE-1);
+	result[(2*PATH_BUFSIZE)-1] = '\0';
+}
 
 /**
  * init_id() - set up the magic id system
@@ -33,23 +53,27 @@ int init_id (char *filepath)
 	if (!id_fd)
 		return -EMEM;
 
-	FILE *fd_temp = fopen(filepath, "r+");
+	char tmp_filepath[2*PATH_BUFSIZE];
+	home_prefix(filepath, tmp_filepath);
+	strncpy(id_fd->filepath, tmp_filepath, (2*PATH_BUFSIZE)-1);
+	id_fd->filepath[(2*PATH_BUFSIZE)-1] = '\0';
+
+	FILE *fd_temp = fopen(id_fd->filepath, "r+");
 	if (!fd_temp)
 		return -EFILE;
 
 	id_fd->fd = fd_temp;
-	strncpy(id_fd->filepath, filepath, PATH_BUFSIZE-1);
-	id_fd->filepath[49] = '\0';
 
 	unsigned int id_temp = 0;
-	fscanf(id_fd->fd, "%6x", &id_temp);
+	fscanf(id_fd->fd, ID_FORMAT, &id_temp);
 	if (id_temp == 0)
-		id_fd->id = 1;
+		id_fd->id = 0x1;
 	else
 		id_fd->id = id_temp;
 
 	return SUCCESS;
 }
+
 
 /**
  * close_id() - close the magic id system
@@ -63,15 +87,15 @@ int close_id (void)
 {
 	extern id_file *id_fd;
 	int res1 = fclose(id_fd->fd);
-	if (!res1)
+	if (res1)
 		return -EFILE;
 
 	FILE *fd = fopen(id_fd->filepath, "w");
 	if (!fd)
 		return -EFILE;
 
-	fprintf(fd, "%6x", id_fd->id);
-	if (!fclose(fd))
+	fprintf(fd, ID_FORMAT, id_fd->id);
+	if (fclose(fd))
 		return -EFILE;
 
 	free(id_fd);
@@ -120,7 +144,7 @@ int get_id (char *result_buf)
 	if (!result_buf)
 		return -EMEM;
 
-	sprintf(result_buf, "%6x", get_id_int());
+	sprintf(result_buf, ID_FORMAT, get_id_int());
 	incriment_id();
 
 	return SUCCESS;

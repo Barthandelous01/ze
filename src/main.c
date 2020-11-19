@@ -5,6 +5,8 @@
 
 #include <config.h>
 
+#include "id.h"
+
 static void version()
 {
 	printf("%s", PACKAGE_STRING "\nCopyright (C) 2020 Barthandelous01\n\
@@ -16,6 +18,13 @@ There is NO WARRANTY, to the extent permitted by law.");
 
 int main (int argc, char **argv)
 {
+	/*
+	  int res = init_id("~/.filenum");
+	  if (res){
+	  fprintf(stderr, "An error occured in init_id: %d\n", res);
+	  exit(-EFILE);
+	  }
+	*/
 	static int quiet = 0;
 	static struct option longopts[] = {
 		{"version",    no_argument,       NULL, 'V'},
@@ -39,6 +48,8 @@ int main (int argc, char **argv)
 		printf("Got single arg: %s\n", argv[1]);
 	else
 		printf("Do default thing\n");
-
+/*
+	close_id();
+*/
 	return 0;
 }

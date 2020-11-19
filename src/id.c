@@ -9,7 +9,8 @@ typedef struct id_file {
 	unsigned int id;
 	char filepath[PATH_BUFSIZE];
 } id_file;
-static id_file id_fd;
+
+static id_file *id_fd;
 
 /**
  * init_id() - set up the magic id system
@@ -18,27 +19,34 @@ static id_file id_fd;
  * init_id() fills in the magic stack-allocated id_fd
  * global that the entire id.c file works with. It keeps
  * track of the current ID, as well as the file descriptor
- * associated with it.
+ * associated with it. The filepath passed must be
+ * absolute: if it is not, fopen() does not canonicalize
+ * filenames, and init_id() will return -EFILE.
  *
  * Returns ESUCCESS on success, or a negative code on
  * error.
  */
 int init_id (char *filepath)
 {
-	FILE *fd_temp = fopen(filepath, "r");
+	extern id_file *id_fd;
+	id_fd = (id_file *)malloc(sizeof(id_file));
+	if (!id_fd)
+		return -EMEM;
+
+	FILE *fd_temp = fopen(filepath, "r+");
 	if (!fd_temp)
 		return -EFILE;
 
-	id_fd.fd = fd_temp;
-	strncpy(id_fd.filepath, filepath, PATH_BUFSIZE-1);
-	id_fd.filepath[49] = '\0';
+	id_fd->fd = fd_temp;
+	strncpy(id_fd->filepath, filepath, PATH_BUFSIZE-1);
+	id_fd->filepath[49] = '\0';
 
 	unsigned int id_temp = 0;
-	fscanf(id_fd.fd, "%6x", &id_temp);
+	fscanf(id_fd->fd, "%6x", &id_temp);
 	if (id_temp == 0)
-		id_fd.id = 1;
+		id_fd->id = 1;
 	else
-		id_fd.id = id_temp;
+		id_fd->id = id_temp;
 
 	return SUCCESS;
 }
@@ -53,17 +61,20 @@ int init_id (char *filepath)
  */
 int close_id (void)
 {
-	int res1 = fclose(id_fd.fd);
+	extern id_file *id_fd;
+	int res1 = fclose(id_fd->fd);
 	if (!res1)
 		return -EFILE;
 
-	FILE *fd = fopen(id_fd.filepath, "w");
+	FILE *fd = fopen(id_fd->filepath, "w");
 	if (!fd)
 		return -EFILE;
 
-	fprintf(fd, "%6x", id_fd.id);
+	fprintf(fd, "%6x", id_fd->id);
 	if (!fclose(fd))
 		return -EFILE;
+
+	free(id_fd);
 
 	return SUCCESS;
 }
@@ -77,7 +88,8 @@ int close_id (void)
  */
 static inline void incriment_id()
 {
-	id_fd.id++;
+	extern id_file *id_fd;
+	id_fd->id++;
 }
 
 /**
@@ -89,7 +101,8 @@ static inline void incriment_id()
  */
 static inline unsigned int get_id_int()
 {
-	return id_fd.id;
+	extern id_file *id_fd;
+	return id_fd->id;
 }
 
 /**
@@ -103,6 +116,7 @@ static inline unsigned int get_id_int()
  */
 int get_id (char *result_buf)
 {
+	extern id_file *id_fd;
 	if (!result_buf)
 		return -EMEM;
 

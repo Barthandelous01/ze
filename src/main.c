@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <stdlib.h>
-#include <lmdb.h>
 
 #include <config.h>
 
@@ -18,21 +17,25 @@ There is NO WARRANTY, to the extent permitted by law.");
 	exit(0);
 }
 
+static void top_level_error(char *format, int code)
+{
+	fprintf(stderr, format, code);
+	exit(code);
+}
+
 int main (int argc, char **argv)
 {
 
 	int res = init_id(CONFIG_ID);
-	if (res){
-		fprintf(stderr, "An error occured in init_id: %d\n", res);
-		exit(-EFILE);
-	}
-	fprintf(stderr, "here\n");
-	int res2 = init_db();
-	if(res2) {
-		fprintf(stderr, "An error ocured in init_db: %d\n", res2);
-		exit(-EDBENV);
-	}
-	fprintf(stderr, "here\n");
+	if (res)
+		top_level_error(ERRMAIN"init_id(): %d\n", res);
+
+	db_context db;
+	int res2 = init_db(&db);
+	if(res2)
+		top_level_error(ERRMAIN"init_db(): %d\n", res2);
+
+
 	static int quiet = 0;
 	static struct option longopts[] = {
 		{"version",    no_argument,       NULL, 'V'},
@@ -61,7 +64,7 @@ int main (int argc, char **argv)
 		fprintf(stderr, "%s\n", "An error has occured");
 	}
 
-	close_db();
+	close_db(&db);
 
 	return EXIT_SUCCESS;
 }

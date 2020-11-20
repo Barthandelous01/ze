@@ -23,17 +23,20 @@
  * error constants
  */
 
-/* error for file open/close errors  */
+/* error prefix string for failure in main */
+#define ERRMAIN  "[ERROR] in "
+
+/* error for file open/close errors          */
 #define EFILE    (1 << 1)
-/* error for an invalid value        */
+/* error for an invalid value                */
 #define EVAL     (1 << 2)
-/* error for memory-related problems */
+/* error for memory-related problems         */
 #define EMEM     (1 << 3)
-/* error for bad database env        */
+/* error for bad database env                */
 #define EDBENV   (1 << 4)
-/* error for bad database cursors    */
+/* error for bad database cursors            */
 #define EDBCUR   (1 << 5)
-/* error for bad database transactions */
+/* error for bad database transactions       */
 #define EDBTRX   (1 << 6)
 
 /*

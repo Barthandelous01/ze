@@ -7,30 +7,20 @@
 #include "error.h"
 #include "io.h"
 
-typedef struct db_context {
-	MDB_cursor *cursor;
-	MDB_txn *txn;
-	MDB_dbi dbi;
-	MDB_env *env;
-} db;
-static db *DB;
+#include "db.h"
 
 /**
  * init_db() - start the database
- * @path: the path for the DB. Should be a directory, and
- *        should start with /
+ * @DB: the context that is initialized
  *
- * As with many DB, this one is initialized into a POD
- * struct that stores environment and cursor for ease of
- * use.
+ * Many DBs are fairly complicated to keep track of (commits, open
+ * instances, etc) but LMDB is a cut above anything else I've
+ * ever used. Each DB requires 4 structs at once... so init_db()
+ * and close_db() use struct db_context to keep all of the items
+ * we need for a working DB right next to each other.
  */
-int init_db()
+int init_db(db_context *DB)
 {
-
-	DB = (db *)malloc(sizeof(db));
-	if (!DB)
-		return -EMEM;
-
 	if (mdb_env_create(&DB->env))
 		return -EDBENV;
 
@@ -56,14 +46,61 @@ int init_db()
  *
  * Cleans up the DB and frees memory.
  */
-int close_db()
+int close_db(db_context *DB)
 {
-	/* stuff */
 	mdb_cursor_close(DB->cursor);
 	mdb_txn_commit(DB->txn);
 	mdb_env_close(DB->env);
 
-	free(DB);
+	return SUCCESS;
+}
 
+/**
+ * add_record() - add a key-value pair to the db
+ * @DB the DB context
+ * @key: the key to insert under
+ * @value: the value to insert
+ *
+ * The LMDB API is fairly complicated and unweildy, so
+ * each of these "wrapper calls" takes the db_context
+ * struct as its first argument.
+ */
+int add_record(db_context *DB, char *key, char *value)
+{
+	MDB_val ke, val;
+
+	ke.mv_data = key;
+	ke.mv_size = strlen(key);
+
+	val.mv_data = value;
+	val.mv_size = strlen(value);
+
+	if(mdb_cursor_put(DB->cursor, &ke, &val, 0))
+		return -EDBCUR;
+
+	return SUCCESS;
+}
+
+/**
+ * get_record() - retreive a value from a key in the db
+ * @DB: the DB context
+ * @key: the key to get the value of
+ * @value: result buffer for the key
+ */
+int get_record(db_context *DB, char *key, char *value)
+{
+	char ret[200];
+	MDB_val ke, val;
+
+	ke.mv_data = key;
+	ke.mv_size = strlen(key);
+
+	val.mv_data = ret;
+	val.mv_size = 200;
+
+	if(mdb_get(DB->txn, DB->dbi, &ke, &val))
+		return -EDBCUR;
+
+	strcpy(value, val.mv_data);
 	return SUCCESS;
 }

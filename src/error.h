@@ -11,6 +11,8 @@
 #define ID_BUFSIZE      20
 /* The format string for reading/writing ID keys */
 #define ID_FORMAT       "%06x"
+/* buffer size for printing zettel */
+#define BUF_CHUNKSIZE   8192
 
 /*
  * success constants
@@ -46,7 +48,7 @@
 /* config directory */
 #define HOME_DIR "/.ze"
 /* config file */
-#define CONFIG_FILE HOME_DIR"/ze.ini"
+#define CONFIG_FILE HOME_DIR"/ze.conf"
 /* ID file */
 #define CONFIG_ID HOME_DIR"/current.id"
 

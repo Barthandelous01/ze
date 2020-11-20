@@ -86,6 +86,9 @@ int add_record(db_context *DB, char *key, char *value)
  * @DB: the DB context
  * @key: the key to get the value of
  * @value: result buffer for the key
+ *
+ * Returns SUCCESS on success, or a negative code on
+ * failure.
  */
 int get_record(db_context *DB, char *key, char *value)
 {
@@ -102,5 +105,29 @@ int get_record(db_context *DB, char *key, char *value)
 		return -EDBCUR;
 
 	strcpy(value, val.mv_data);
+	return SUCCESS;
+}
+
+/**
+ * delete_record() - delete a record from the db
+ * @DB: the DB context
+ * @key: the key to delete
+ *
+ * The DB used by `ze` doesn't have multiple schema or
+ * duplicate keys, so we only need the key to remove a
+ * record.
+ *
+ * Returns SUCCESS on success, or a negative code on
+ * failure.
+ */
+int delete_record(db_context *DB, char *key)
+{
+	MDB_val ke;
+	ke.mv_data = key;
+	ke.mv_size = strlen(key);
+
+	if(mdb_del(DB->txn, DB->dbi, &ke, NULL))
+		return -EDBCUR;
+
 	return SUCCESS;
 }

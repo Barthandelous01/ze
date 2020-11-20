@@ -29,6 +29,12 @@
 #define EVAL     (1 << 2)
 /* error for memory-related problems */
 #define EMEM     (1 << 3)
+/* error for bad database env        */
+#define EDBENV   (1 << 4)
+/* error for bad database cursors    */
+#define EDBCUR   (1 << 5)
+/* error for bad database transactions */
+#define EDBTRX   (1 << 6)
 
 /*
  * Path constants. For use with home_prefix()

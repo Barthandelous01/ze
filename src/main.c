@@ -6,6 +6,7 @@
 #include <config.h>
 
 #include "id.h"
+#include "db.h"
 #include "error.h"
 
 static void version()
@@ -25,7 +26,13 @@ int main (int argc, char **argv)
 		fprintf(stderr, "An error occured in init_id: %d\n", res);
 		exit(-EFILE);
 	}
-
+	fprintf(stderr, "here\n");
+	int res2 = init_db();
+	if(res2) {
+		fprintf(stderr, "An error ocured in init_db: %d\n", res2);
+		exit(-EDBENV);
+	}
+	fprintf(stderr, "here\n");
 	static int quiet = 0;
 	static struct option longopts[] = {
 		{"version",    no_argument,       NULL, 'V'},
@@ -53,6 +60,8 @@ int main (int argc, char **argv)
 	if(close_id() != SUCCESS) {
 		fprintf(stderr, "%s\n", "An error has occured");
 	}
+
+	close_db();
 
 	return EXIT_SUCCESS;
 }

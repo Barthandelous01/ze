@@ -11,7 +11,7 @@
 
   #+BEGIN_SRC sh
     ze                        # print index note
-    ze [id]                   # print the note with [id]
+    ze [id...]                # print the notes with [id]s
     ze -r [id]                # remove a note
     ze -n                     # interactively make a note
     ze -e [id]                # edit a note
@@ -42,7 +42,6 @@
 
    ~ze~ uses the Linux kernel coding style. As with the kernel itself, breaks
    with the style are allowed, but only with good reason.
-
    The normal
    - branch
    - edit
@@ -51,3 +50,4 @@
    workflow of git is prefered for contributions. Branch =master= is used for
    devlopment; once there are stable releases, snapshots will be on the
    =releases= branch.
+

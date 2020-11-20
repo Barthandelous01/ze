@@ -1,0 +1,40 @@
+.TH ZE "1" "November 2020" "ze 0.0.1" "User Commands"
+.SH NAME
+ze \- a Unix-y implimentation of a zettelkasten
+.SH SYNOPSIS
+ze -r [id]
+.br
+ze -n
+.br
+ze -e [id]
+.br
+ze -l
+.br
+ze [id...]
+.br
+.SH DESCRIPTION
+Access a digital zettelkasten, or knowledge web. Display multiple zettel,
+interactively create or edit zettel, and remove zettel from a database.
+Zettel can be easily searched,
+.BR grep (1)
+d for, and arranged in different orders to facilitate easy browsing.
+.SH OPTIONS
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Return the official version and copyright of ze.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print a basic help message.
+.TP
+\fB\-n\fR, \fB\-\-new\fR
+Create a new note interactively.
+.TP
+\fB\-e\fR, \fB\-\-edit\fR=id
+Edit an existing note.
+.TP
+\fB\-r\fR, \fB\-\-remove\fR=id
+Remove an note with the given id.
+.TP
+\fB[id...]\fR
+Print the given IDs.
+

@@ -27,12 +27,13 @@ missing
 *.dSYM
 *.plist
 *.c~
-src/user_conf.h
-src/cmics
-src/a.out.dSYM/Contents/Info.plist
 a.out
 /build
 
-
 # MacOS Formatting files
 .DS_Store
+
+# GNU Global files
+GPATH
+GTAGS
+GRTAGS

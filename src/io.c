@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdarg.h>
+#include <sys/wait.h>
 
 #include "error.h"
 
@@ -28,14 +30,14 @@ void home_prefix(char *postfix, char *result)
 }
 
 /**
- * print_zettel() - print a zettel
+ * raw_print() - print a raw file
  * @pathname: the path to the zettel to print
  *
  * Efficiently print a zettel file. Uses buffering (similar to
  * cat(1)) in order to print the zettel as fast as possible.
  * The methods are influeneced by GNU yes.
  */
-int print_zettel(char *pathname)
+static int raw_print(char *pathname)
 {
 	int fd = open(pathname, O_RDONLY);
 	if (!fd)
@@ -63,4 +65,35 @@ int print_zettel(char *pathname)
 		return -EFILE;
 
 	return SUCCESS;
+}
+
+/**
+ * print_zettel() - print a zettel
+ * @cfg: unused. To pass config to.
+ * @pathname: the path of the zettel to print. Should
+ *            have a leading /
+ */
+int print_zettel(void *cfg, char *pathname)
+{
+	/* suppress warning for now */
+	if(!cfg) {}
+
+	/* check for overriding pager from cfg eventually */
+
+	/* for now, use default */
+	char path[2*PATH_BUFSIZE];
+	int pid;
+
+	home_prefix(pathname, path);
+	if((pid = fork()) == 0) {
+		if(execl("/usr/bin/bat", "--paging", path, (char *)0))
+			raw_print(path);
+		exit(EXIT_SUCCESS);
+	} else {
+		wait(NULL);
+	}
+
+	return SUCCESS;
+
+
 }

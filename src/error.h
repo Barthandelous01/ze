@@ -51,5 +51,7 @@
 #define CONFIG_FILE HOME_DIR"/ze.conf"
 /* ID file */
 #define CONFIG_ID HOME_DIR"/current.id"
+/* directory where the zettel live */
+#define ZETTEL_DIR HOME_DIR"/zettels"
 
 #endif /* ERROR_H_ */

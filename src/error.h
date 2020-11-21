@@ -13,6 +13,10 @@
 #define ID_FORMAT       "%06x"
 /* buffer size for printing zettel */
 #define BUF_CHUNKSIZE   8192
+/* default pager */
+#define DEF_PAGE "/usr/bin/bat", "--paging"
+/* default editor */
+#define DEF_EDIT "/usr/bin/ed", "ed"
 
 /*
  * success constants
@@ -40,6 +44,8 @@
 #define EDBCUR   (1 << 5)
 /* error for bad database transactions       */
 #define EDBTRX   (1 << 6)
+/* error for bad forks                       */
+#define EFORK    (1 << 7)
 
 /*
  * Path constants. For use with home_prefix()

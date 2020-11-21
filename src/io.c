@@ -86,14 +86,47 @@ int print_zettel(void *cfg, char *pathname)
 
 	home_prefix(pathname, path);
 	if((pid = fork()) == 0) {
-		if(execl("/usr/bin/bat", "--paging", path, (char *)0))
-			raw_print(path);
+		if(execl(DEF_PAGE, path, (char *)NULL)) {
+			if (raw_print(path))
+				return -EFILE;
+		}
 		exit(EXIT_SUCCESS);
+	} else if (pid < 0) {
+		return -EFORK;
 	} else {
 		wait(NULL);
 	}
 
 	return SUCCESS;
+}
 
+/**
+ * edit_zettel() - edit a zettel
+ * @cfg: unused. To pass config to.
+ * @pathname: the path of the zettel to edit.
+ *            Is canonicalized; lead with /
+ */
+int edit_zettel(void *cfg, char *pathname)
+{
+	/* suppress warning for now */
+	if(!cfg) {}
 
+	/* check for overriding editor from cfg eventually */
+
+	/* for now, use default */
+	char path[2*PATH_BUFSIZE];
+	int pid;
+
+	home_prefix(pathname, path);
+	if ((pid = fork()) == 0) {
+		if(execl(getenv("EDITOR"), getenv("EDITOR"), path, (char *)NULL))
+			execl(DEF_EDIT, path, (char *)NULL);
+		exit(EXIT_SUCCESS);
+	} else if (pid < 0) {
+		return -EFORK;
+	} else {
+		wait(NULL);
+	}
+
+	return SUCCESS;
 }

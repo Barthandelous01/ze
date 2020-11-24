@@ -25,7 +25,7 @@ static int read_config_line(FILE *fd, char *key, char *val)
 		    && j != '#'; i++)
 		key[i] = j;
 	/* null terminate */
-	key[--i] = '\0';
+	key[i] = '\0';
 	if (j == EOF)
 		return EOF;
 
@@ -38,7 +38,7 @@ static int read_config_line(FILE *fd, char *key, char *val)
 		    && j != '\n'; k++)
 		val[k] = j;
 	/* null-terminate */
-	val[--k] = '\0';
+	val[k] = '\0';
 	if(j == EOF)
 		return EOF;
 	/* success */
@@ -121,4 +121,27 @@ int parse_config(char *pathname, config *cfg)
 	}
 
 	return SUCCESS;
+}
+
+/**
+ * get_config() - get the setting from a config key
+ * @cfg: the config header
+ * @key: the key to retreive
+ * @val: the result buffer
+ *
+ * get_config() returns the value associated with a key and writes it into
+ * val. Returns SUCCESS on success, or -EVAL if the key is not found.
+ */
+int get_config(config *cfg, char *key, char *val)
+{
+	config_item *temp = cfg->head;
+	while(temp->next != NULL) {
+		if(strcmp(key, temp->key) == 0) {
+			strncpy(val, temp->value, CONF_KEY_SIZE);
+			return SUCCESS;
+		}
+		temp = temp->next;
+	}
+
+	return -EVAL;
 }

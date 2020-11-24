@@ -17,5 +17,6 @@ typedef struct config {
 
 int parse_config(char *pathname, config *cfg);
 int close_config(config *cfg);
+int get_config(config *cfg, char *key, char *val);
 
 #endif	/* CONF_H_ */

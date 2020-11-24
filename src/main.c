@@ -7,6 +7,7 @@
 #include "id.h"
 #include "db.h"
 #include "io.h"
+#include "conf.h"
 #include "error.h"
 
 static void version()

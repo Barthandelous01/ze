@@ -27,15 +27,19 @@ static void top_level_error(char *format, int code)
 
 int main (int argc, char **argv)
 {
+	int res;
 
-	int res = init_id(CONFIG_ID);
-	if (res)
+	config cfg;
+	cfg.head = NULL;
+	if((res = parse_config(CONFIG_FILE, &cfg)))
+		top_level_error(ERRMAIN"parse_config(): %d\n", res);
+
+	if ((res = init_id(CONFIG_ID)))
 		top_level_error(ERRMAIN"init_id(): %d\n", res);
 
 	db_context db;
-	int res2 = init_db(&db);
-	if(res2)
-		top_level_error(ERRMAIN"init_db(): %d\n", res2);
+	if((res = init_db(&db)))
+		top_level_error(ERRMAIN"init_db(): %d\n", res);
 
 
 	static int quiet = 0;
@@ -62,9 +66,11 @@ int main (int argc, char **argv)
 	else
 		printf("Do default thing\n");
 
-	if(close_id() != SUCCESS) {
-		fprintf(stderr, "%s\n", "An error has occured");
-	}
+	if((res = close_id()))
+		top_level_error(ERRMAIN"close_id(): %d\n", res);
+
+	if((res = close_config(&cfg)))
+		top_level_error(ERRMAIN"close_config(): %d\n", res);
 
 	close_db(&db);
 

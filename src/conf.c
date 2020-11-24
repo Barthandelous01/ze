@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "io.h"
 
@@ -16,33 +17,81 @@
  */
 static int read_config_line(FILE *fd, char *key, char *val)
 {
-	size_t i = 0, j = 0;
+	int i = 0, j = 0;
 	/* get first key */
-	for(i, j; i < CONF_KEY_SIZE
+	for(; i < CONF_KEY_SIZE
 		    && (j = fgetc(fd)) != '='
 		    && j != EOF
 		    && j != '#'; i++)
 		key[i] = j;
 	/* null terminate */
-	key[i++] = '\0';
+	key[--i] = '\0';
 	if (j == EOF)
 		return EOF;
 
-	size_t k = 0;
+	int k = 0;
 	/* get value */
-	for(k, j; k < CONF_KEY_SIZE
+	for(; k < CONF_KEY_SIZE
 		    && (j = fgetc(fd))
 		    && j != EOF
 		    && j != '#'
 		    && j != '\n'; k++)
 		val[k] = j;
 	/* null-terminate */
-	val[k++] = '\0';
+	val[--k] = '\0';
 	if(j == EOF)
 		return EOF;
 	/* success */
 	return SUCCESS;
 }
+
+/**
+ * append_config() - append a pair to the config struct
+ * @cfg: the config * to append to
+ * @item: the address of the (presumably heap-allocated) item to append
+ *
+ * Append *item to the *cfg linked list.
+ */
+static void append_config(config *cfg, config_item *item)
+{
+	config_item *temp;
+	temp = cfg->head;
+	if (temp == NULL) {
+		cfg->head = item;
+		cfg->head->next = NULL;
+		return;
+	}
+	while(temp->next != NULL)
+		temp = temp->next;
+
+	temp->next = item;
+	item->next = NULL;
+}
+
+/**
+ * close_config() - release all the allocated memory
+ * @cfg: the config to release
+ *
+ * close_config() free()s all of the memory allocated in parsing
+ * the config file into a singly-linked list.
+ */
+int close_config(config *cfg)
+{
+	config_item *temp;
+	config_item *temp2 = NULL;
+	temp = cfg->head;
+	temp2 = temp->next;
+	do {
+		free(temp);
+		temp = temp2;
+		if(temp2 != NULL)
+			temp2 = temp2->next;
+
+	} while(temp != NULL);
+
+	return SUCCESS;
+}
+
 
 /**
  * parse_config() - parse a config file and return the values inside it
@@ -57,7 +106,19 @@ int parse_config(char *pathname, config *cfg)
 {
 	char x[CONF_KEY_SIZE], y[CONF_KEY_SIZE];
 	char pth[2*PATH_BUFSIZE];
+	config_item *item;
 	home_prefix(pathname, pth);
+
+	FILE *fd = fopen(pth, "r");
+	if(!fd)
+		return -EFILE;
+
+	while(read_config_line(fd, x, y) != EOF) {
+		item = malloc(sizeof(config_item));
+		strncpy(item->key, x, CONF_KEY_SIZE);
+		strncpy(item->value, y, CONF_KEY_SIZE);
+		append_config(cfg, item);
+	}
 
 	return SUCCESS;
 }

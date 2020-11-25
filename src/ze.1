@@ -37,4 +37,31 @@ Remove an note with the given id.
 .TP
 \fB[id...]\fR
 Print the given IDs.
+.SH CONFIGURATION
+.BR ze(1)
+can easily be configured using the config file found at
+.BR $HOME/.ze/ze.conf.
+It uses a straightforward key=value pair system, and supports
+.BR #
+as a comment character.
+\&
+
+.EE
+.in
+.EX
+# Set the editor
+EDITOR=/usr/bin/emacs
+# Set the pager
+# Might prefer the default, so leave it commented
+# PAGER=/usr/bin/less
+
+
+The current options available to the config file are:
+.TP
+\fB EDITOR \fR\&
+Sets the editor to be used when creating or editing zettel
+.TP
+\fB PAGER \fR\&
+Set the application used to print zettels
+
 

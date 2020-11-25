@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 
 #include "error.h"
+#include "conf.h"
 
 /**
  * home_prefix() - $HOME-prefix a filepath
@@ -73,22 +74,25 @@ static int raw_print(char *pathname)
  * @pathname: the path of the zettel to print. Should
  *            have a leading /
  */
-int print_zettel(void *cfg, char *pathname)
+int print_zettel(config *cfg, char *pathname)
 {
-	/* suppress warning for now */
-	if(!cfg) {}
-
-	/* check for overriding pager from cfg eventually */
-
-	/* for now, use default */
 	char path[2*PATH_BUFSIZE];
+	char conf_pager[CONF_KEY_SIZE] = "";
 	int pid;
 
 	home_prefix(pathname, path);
+	get_config(cfg, "PAGER", conf_pager);
 	if((pid = fork()) == 0) {
-		if(execl(DEF_PAGE, path, (char *)NULL)) {
-			if (raw_print(path))
-				return -EFILE;
+		if (strcmp(conf_pager, "") == 0) {
+			if(execl(DEF_PAGE, path, (char *)NULL)) {
+				if (raw_print(path))
+					return -EFILE;
+			}
+		} else {
+			if(execl(conf_pager, conf_pager, path, (char *) NULL)) {
+				if(raw_print(path))
+					return -EFILE;
+			}
 		}
 		exit(EXIT_SUCCESS);
 	} else if (pid < 0) {
@@ -129,4 +133,32 @@ int edit_zettel(void *cfg, char *pathname)
 	}
 
 	return SUCCESS;
+}
+
+/**
+ * check_dir() - ensure directories exist
+ * @dir: the directory to check
+ *
+ * do a quick and dirty check to see if `dir` exists
+ */
+static void check_dir(char *dir)
+{
+	char path[2*PATH_BUFSIZE];
+	home_prefix(dir, path);
+	struct stat st = {0};
+	if (stat(path, &st) == -1)
+		mkdir(path, 0777);
+}
+
+/**
+ * ensure_directories() - run a check on each directory needed by ze
+ *
+ * A relatively inelegant way to make sure directories exist
+ * (as C does not, unfortunately, have a ensure-directories function as
+ * lisp does)
+ */
+void ensure_directories()
+{
+	 check_dir(HOME_DIR);
+	 check_dir(ZETTEL_DIR);
 }

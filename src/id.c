@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "error.h"
 #include "io.h"
@@ -39,7 +40,7 @@ int init_id (char *filepath)
 	strncpy(id_fd->filepath, tmp_filepath, (2*PATH_BUFSIZE)-1);
 	id_fd->filepath[(2*PATH_BUFSIZE)-1] = '\0';
 
-	FILE *fd_temp = fopen(id_fd->filepath, "r+");
+	FILE *fd_temp = fopen(id_fd->filepath, "a+");
 	if (!fd_temp)
 		return -EFILE;
 

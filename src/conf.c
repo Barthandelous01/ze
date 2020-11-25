@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "io.h"
 
@@ -19,7 +20,7 @@ static int read_config_line(FILE *fd, char *key, char *val)
 {
 	int i = 0, j = 0;
 	/* get first key */
-	for(; i < CONF_KEY_SIZE
+	for(; i < CONF_KEY_SIZE-1
 		    && (j = fgetc(fd)) != '='
 		    && j != EOF
 		    && j != '#'; i++)
@@ -31,7 +32,7 @@ static int read_config_line(FILE *fd, char *key, char *val)
 
 	int k = 0;
 	/* get value */
-	for(; k < CONF_KEY_SIZE
+	for(; k < CONF_KEY_SIZE-1
 		    && (j = fgetc(fd))
 		    && j != EOF
 		    && j != '#'
@@ -79,6 +80,9 @@ int close_config(config *cfg)
 {
 	config_item *temp;
 	config_item *temp2 = NULL;
+	if(cfg->head == NULL)
+		return SUCCESS;
+
 	temp = cfg->head;
 	temp2 = temp->next;
 	do {
@@ -109,6 +113,10 @@ int parse_config(char *pathname, config *cfg)
 	config_item *item;
 	home_prefix(pathname, pth);
 
+	struct stat st;
+	if(stat(pth, &st) != 0)
+		return SUCCESS;
+
 	FILE *fd = fopen(pth, "r");
 	if(!fd)
 		return -EFILE;
@@ -135,7 +143,7 @@ int parse_config(char *pathname, config *cfg)
 int get_config(config *cfg, char *key, char *val)
 {
 	config_item *temp = cfg->head;
-	while(temp->next != NULL) {
+	while(temp != NULL) {
 		if(strcmp(key, temp->key) == 0) {
 			strncpy(val, temp->value, CONF_KEY_SIZE);
 			return SUCCESS;

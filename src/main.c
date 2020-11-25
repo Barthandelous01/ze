@@ -29,6 +29,8 @@ int main (int argc, char **argv)
 {
 	int res;
 
+	ensure_directories();
+
 	config cfg;
 	cfg.head = NULL;
 	if((res = parse_config(CONFIG_FILE, &cfg)))
@@ -40,7 +42,6 @@ int main (int argc, char **argv)
 	db_context db;
 	if((res = init_db(&db)))
 		top_level_error(ERRMAIN"init_db(): %d\n", res);
-
 
 	static int quiet = 0;
 	static struct option longopts[] = {

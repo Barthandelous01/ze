@@ -22,6 +22,10 @@ AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([mkdir])
 
+AC_ARG_ENABLE([git],
+	AS_HELP_STRING([--enable-git], [Enable the git interface script]))
+AM_CONDITIONAL([GIT], [test x$git = xtrue])
+
 AC_CONFIG_FILES([
 Makefile
 src/Makefile

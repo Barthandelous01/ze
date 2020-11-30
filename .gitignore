@@ -8,6 +8,7 @@ src/.deps/
 src/Makefile.in
 
 # root directory
+*.in
 /aclocal.m4
 /autom4te.cache/
 /config.*

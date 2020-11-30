@@ -25,6 +25,7 @@ AC_CHECK_FUNCS([mkdir])
 AC_CONFIG_FILES([
 Makefile
 src/Makefile
+git/Makefile
 ])
 
 AC_OUTPUT

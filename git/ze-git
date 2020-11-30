@@ -1,0 +1,83 @@
+#!/usr/bin/perl
+# ze-git
+#
+# Copyright (C) 2020 Barthandelous01
+#
+# redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+# may be used to endorse or promote products derived from this software without
+# specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+use utf8;
+use strict;
+use warnings;
+use open qw(:std :utf8);
+use v5.14;
+
+no warnings 'experimental::smartmatch';
+
+sub usage() {
+    print "$0: manage your zettelkasten in git\n\n",
+	"Options:\n",
+	"\tinit [url]: takes a url and makes a git repository",
+	"with the url as \n\t\tits remote.\n",
+	"\tcommit [optional message]: commits all changes, with ",
+	"either the given \n\t\tmessage or a timestamp.\n",
+	"\tpush: push all changes to the repo.\n",
+	"\tpull: update changes from the remote.\n\n";
+    exit(1);
+}
+
+sub git_init() {
+    ...;
+}
+
+sub git_commit() {
+    ...;
+}
+
+sub git_push() {
+    ...;
+}
+
+sub git_pull() {
+    ...;
+}
+
+sub main() {
+    if (scalar(@ARGV) == 0) {
+	usage();
+    }
+    for ($ARGV[0]) {
+	when("init") { git_init() }
+	when("commit") { git_commit() }
+	when("push") { git_push() }
+	when("pull") { git_pull() }
+	default { usage() }
+    }
+}
+
+unless (caller) {
+    main();
+}

@@ -24,7 +24,7 @@
    set up the build system. Then run
 
    #+BEGIN_SRC sh
-     ./configure
+     ./configure # optionally, --enable-git
      make
      sudo make install
    #+END_SRC
@@ -51,3 +51,86 @@
    devlopment; once there are stable releases, snapshots will be on the
    =releases= branch.
 
+* Philosophy
+
+  ~ze~ is entirely workflow-agnostic. Want to use markdown for your notes? Go
+  ahead. Just set the =FILE_FORMAT= config value to =md=. Prefer org-mode's
+  integration with emacs? Set =FILE_FORMAT= to =org= instead. ~ze~
+  doesn't make you use a specific pager, editor, file format, or synchronization
+  scheme. There is an optional perl script, enabled with the configure flag
+  ~--enable-git~, that allows an easy and automated frontend to carrying your
+  zettelkasten around with you across different machines, but it is entirely
+  optional. Want to use [[http://darcs.net/][darcs]] or [[https://subversion.apache.org/][svn]], you can feel free to not bloat your
+  install and use those by hand instead. ~ze~ also titles your zettel in a human
+  -readable way, so that you can quickly do something like
+  ~ls -l \~/.ze/zettels | grep 'name'~. 
+
+* Why ~ze~?
+
+  There are a few major reasons you should use ~ze~ over other alternatives.
+  Most of them stem from ~ze~'s philosophy. Here's a list of just a few reasons
+  you should use ~ze~ for knowledge management:
+
+  1. It's fast.
+
+     ~ze~ uses [[https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database][lmdb]] to index zettel, and all config is done through a hash map
+     implimented as a singly-linked-list, operating in O(n) time in a worst-case
+     scenario. Editors and pagers are called from a second thread, without the
+     overhead of a call to ~sh~. (see =man 3 exec= and =man 3 system= for more
+     details on how that improves performance.)
+
+  2. It's small.
+
+     ~ze~'s codebase is just over 600 lines of code, and around 300 lines more
+     of comments. That's around 50% comments! That means that every function is
+     easy to hack on, change, tweak, and read. Every piece of code is meant to
+     signal failure in an easy and explicit way, and many changes can be made
+     easily by changing the appropriate =#define= in =src/error.h=.
+
+  3. It's simple.
+
+     ~ze~ doesn't try to lock you into a format, or a display method, or even
+     provide a system to publish your zettel into a website. It is, simply, an
+     index and interface to a lot of plain text files.
+
+  4. It's minimal.
+
+     You may be wondering, how is that different from small? Simple. ~ze~
+     doesn't provide any features it doesn't need to. All ~ze~ does is print
+     and edit zettel, and keep track of their IDs in a database. Even
+     syncronization is handled through an external script. No GUI, no bloat,
+     just plain =--std=c99= and standard *nix libraries.
+
+* Hacking
+
+  So, you want to hack on ~ze~? Good for you! I hope that you'll consider
+  contributing some of the changes back, but even if you don't, here's an
+  overview of the general purposes of each "module" and where to find it.
+
+  - =conf=: handles config files. Found in:
+    - ~src/config.c~
+    - ~src/config.h~
+  - =id=: handles zettel unique ids. Found in:
+    - ~src/id.c~
+    - ~src/id.h~
+  - =db=: handles the lmdb database. Found in:
+    - ~src/db.c~
+    - ~src/db.h~
+  - =io=: handles printing and editing of zettel. Found in:
+    - ~src/io.c~
+    - ~src/io.h~
+  - =interface=: the face of ~ze~. Found in:
+    - ~src/main.c~
+  - =git=: refers both to this repo and ~ze~'s git integration. Found in:
+    - ~.gitignore~
+    - ~.gitattributes~
+    - ~git/ze-git~
+  - =build=: files for the build system of ~ze~. Found in:
+    - ~configure.ac~
+    - ~Makefile.am~
+    - ~src/Makefile.am~
+    - ~git/Makefile.am~
+  - =doc=: documentation for various things. Found in:
+    - ~README.org~
+    - ~src/ze.1~
+    - ~git/ze-git.1~

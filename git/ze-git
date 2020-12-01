@@ -3,7 +3,7 @@
 #
 # Copyright (C) 2020 Barthandelous01
 #
-# redistribution and use in source and binary forms, with or without
+# Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
 # 1. Redistributions of source code must retain the above copyright notice,
@@ -40,7 +40,7 @@ no warnings 'experimental::smartmatch';
 sub usage() {
     print "$0: manage your zettelkasten in git\n\n",
 	"Options:\n",
-	"\tinit [url]: takes a url and makes a git repository",
+	"\tinit [url]: takes a url and makes a git repository ",
 	"with the url as \n\t\tits remote.\n",
 	"\tcommit [optional message]: commits all changes, with ",
 	"either the given \n\t\tmessage or a timestamp.\n",
@@ -50,19 +50,29 @@ sub usage() {
 }
 
 sub git_init() {
-    ...;
+    my $url = shift;
+    `git init ~/.ze/zettels/`;
+    `git origin add url`;
+    git_pull();
 }
 
 sub git_commit() {
-    ...;
+    `git add ~/.ze/zettels/`
+    my $message = shift;
+    if ($message != "") {
+	`git commit -m $message`;
+    } else {
+	my $time = gmtime();
+	`git commit -m "$time"`;
+    }
 }
 
 sub git_push() {
-    ...;
+    `git push`;
 }
 
 sub git_pull() {
-    ...;
+    `git pull origin master`;
 }
 
 sub main() {

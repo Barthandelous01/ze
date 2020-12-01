@@ -128,6 +128,9 @@ int parse_config(char *pathname, config *cfg)
 		append_config(cfg, item);
 	}
 
+	if(fclose(fd))
+		return -EFILE;
+
 	return SUCCESS;
 }
 

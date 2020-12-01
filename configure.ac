@@ -12,6 +12,7 @@ AC_PROG_CC
 
 # Checks for libraries.
 PKG_CHECK_MODULES([LMDB], [lmdb])
+PKG_CHECK_MODULES([CHECK], [check >= 0.13.0])
 AC_SUBST([LMDB_CFLAGS])
 AC_SUBST([LMDB_LIBS])
 
@@ -30,6 +31,7 @@ AC_CONFIG_FILES([
 Makefile
 src/Makefile
 git/Makefile
+tests/Makefile
 ])
 
 AC_OUTPUT

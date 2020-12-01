@@ -27,11 +27,11 @@ static void top_level_error(char *format, int code)
 
 int main (int argc, char **argv)
 {
-	int res;
+	int res, ch;
+	config cfg;
 
 	ensure_directories();
 
-	config cfg;
 	cfg.head = NULL;
 	if((res = parse_config(CONFIG_FILE, &cfg)))
 		top_level_error(ERRMAIN"parse_config(): %d\n", res);
@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 		{"edit",       required_argument, NULL, 'e'},
 		{"remove",     required_argument, NULL, 'r'}
 	};
-	int ch = 0;
+
 	while ((ch = getopt_long(argc, argv, "Vhne:r:", longopts, NULL)) != -1)
 	{
 		quiet = 1;

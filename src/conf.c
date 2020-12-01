@@ -70,6 +70,20 @@ static void append_config(config *cfg, config_item *item)
 }
 
 /**
+ * free_conf_item() - free a config item recursively
+ * @item: the item to recursively free
+ *
+ * In order to free a linked list, this function uses simple
+ * recursion to chain calls to free.
+ */
+static void free_conf_item(config_item *item)
+{
+	if(item != NULL && item->next != NULL)
+		free_conf_item(item->next);
+	free(item);
+}
+
+/**
  * close_config() - release all the allocated memory
  * @cfg: the config to release
  *
@@ -78,24 +92,10 @@ static void append_config(config *cfg, config_item *item)
  */
 int close_config(config *cfg)
 {
-	config_item *temp;
-	config_item *temp2 = NULL;
-	if(cfg->head == NULL)
-		return SUCCESS;
-
-	temp = cfg->head;
-	temp2 = temp->next;
-	do {
-		free(temp);
-		temp = temp2;
-		if(temp2 != NULL)
-			temp2 = temp2->next;
-
-	} while(temp != NULL);
+	free_conf_item(cfg->head);
 
 	return SUCCESS;
 }
-
 
 /**
  * parse_config() - parse a config file and return the values inside it

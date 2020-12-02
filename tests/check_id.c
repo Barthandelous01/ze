@@ -53,6 +53,43 @@ START_TEST (test_get_id_no_file)
 END_TEST
 
 /**
+ * test_get_id_empty_file() - test on an empty file
+ *
+ * Ensure the correct behavior of init_id() when called with
+ * an empty file.
+ */
+START_TEST (test_get_id_empty_file)
+{
+	/* Setup: make sure file is empty */
+	char y[2*PATH_BUFSIZE];
+	home_prefix("/ZZZZZZtest.id", y);
+	remove(y);
+	FILE *fd = fopen(y, "w+");
+	if (fd == NULL)
+		ck_abort_msg("Could not create file %s after deleting\n", y);
+
+	if(fclose(fd) != 0)
+		ck_abort_msg("Could not close file %s\n", y);
+
+	/* Make sure there are no initial failures */
+	ck_assert(init_id("/ZZZZZZtest.id") == 0);
+
+	char x[20];
+
+	get_id(x);
+	ck_assert_pstr_eq(x, "000001");
+
+	get_id(x);
+	ck_assert_pstr_eq(x, "000002");
+
+	close_id();
+
+	/* Teardown: don't leave random files in the user's home dir */
+	remove(y);
+}
+END_TEST
+
+/**
  * id_suite() - generate the test suite for id
  *
  * id_suite() is a boilerplate function that ties together the above
@@ -70,6 +107,7 @@ Suite * id_suite(void)
 	/* Add each test to be run */
 	tcase_add_test(tc_core, test_init_id);
 	tcase_add_test(tc_core, test_get_id_no_file);
+	tcase_add_test(tc_core, test_get_id_empty_file);
 
 	suite_add_tcase(s, tc_core);
 	return s;

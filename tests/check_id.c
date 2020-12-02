@@ -90,6 +90,43 @@ START_TEST (test_get_id_empty_file)
 END_TEST
 
 /**
+ * test_get_id_garbage_file() - test on garbage file
+ *
+ * test_get_id_garbage_file() tests init_id()'s behavior when
+ * called on a file with garbage in it.
+ */
+START_TEST (test_get_id_garbage_file)
+{
+	/* Setup: make sure file is empty */
+	char y[2*PATH_BUFSIZE];
+	home_prefix("/ZZZZZZtest.id", y);
+	remove(y);
+	FILE *fd = fopen(y, "w+");
+	if (fd == NULL)
+		ck_abort_msg("Could not create file %s after deleting\n", y);
+	fprintf(fd, "%s", "hfksdfi8h3qlks\n\n\n\to23fasdf\n");
+	if(fclose(fd) != 0)
+		ck_abort_msg("Could not close file %s\n", y);
+
+	/* Make sure there are no initial failures */
+	ck_assert(init_id("/ZZZZZZtest.id") == 0);
+
+	char x[20];
+
+	get_id(x);
+	ck_assert_pstr_eq(x, "000001");
+
+	get_id(x);
+	ck_assert_pstr_eq(x, "000002");
+
+	close_id();
+
+	/* Teardown: don't leave random files in the user's home dir */
+	remove(y);
+}
+END_TEST
+
+/**
  * id_suite() - generate the test suite for id
  *
  * id_suite() is a boilerplate function that ties together the above
@@ -108,6 +145,7 @@ Suite * id_suite(void)
 	tcase_add_test(tc_core, test_init_id);
 	tcase_add_test(tc_core, test_get_id_no_file);
 	tcase_add_test(tc_core, test_get_id_empty_file);
+	tcase_add_test(tc_core, test_get_id_garbage_file);
 
 	suite_add_tcase(s, tc_core);
 	return s;

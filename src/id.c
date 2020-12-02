@@ -40,9 +40,12 @@ int init_id (char *filepath)
 	strncpy(id_fd->filepath, tmp_filepath, (2*PATH_BUFSIZE)-1);
 	id_fd->filepath[(2*PATH_BUFSIZE)-1] = '\0';
 
-	FILE *fd_temp = fopen(id_fd->filepath, "a+");
-	if (!fd_temp)
-		return -EFILE;
+	FILE *fd_temp = fopen(id_fd->filepath, "r+");
+	if (!fd_temp) {
+		id_fd->fd = NULL;
+		id_fd->id = 0x1;
+		return SUCCESS;
+	}
 
 	id_fd->fd = fd_temp;
 
@@ -68,9 +71,11 @@ int init_id (char *filepath)
 int close_id (void)
 {
 	extern id_file *id_fd;
-	int res1 = fclose(id_fd->fd);
-	if (res1)
-		return -EFILE;
+	if (id_fd->fd != NULL) {
+		int res1 = fclose(id_fd->fd);
+		if (res1)
+			return -EFILE;
+	}
 
 	FILE *fd = fopen(id_fd->filepath, "w");
 	if (!fd)

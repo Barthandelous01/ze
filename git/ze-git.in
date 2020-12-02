@@ -51,13 +51,13 @@ sub usage() {
 
 sub git_init() {
     my $url = shift;
-    `git init ~/.ze/zettels/`;
+    `git init ZETTEL_HOME`;
     `git origin add url`;
     git_pull();
 }
 
 sub git_commit() {
-    `git add ~/.ze/zettels/`
+    `git add ZETTEL_HOME`;
     my $message = shift;
     if ($message != "") {
 	`git commit -m $message`;

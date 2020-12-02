@@ -12,7 +12,8 @@ AC_PROG_CC
 
 # Checks for libraries.
 PKG_CHECK_MODULES([LMDB], [lmdb])
-PKG_CHECK_MODULES([CHECK], [check >= 0.13.0])
+PKG_CHECK_MODULES([CHECK], [check >= 0.13.0], [],
+		   [echo "Check not installed; tests will be unable to run"])
 AC_SUBST([LMDB_CFLAGS])
 AC_SUBST([LMDB_LIBS])
 
@@ -24,7 +25,12 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([mkdir])
 
 AC_ARG_ENABLE([git],
-	AS_HELP_STRING([--enable-git], [Enable the git interface script]))
+[--enable-git	Enable the git interface script],
+[case "${enableval}" in
+  yes) git=true ;;
+  no)  git=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-git]) ;;
+esac],[git=false])
 AM_CONDITIONAL([GIT], [test x$git = xtrue])
 
 AC_CONFIG_FILES([

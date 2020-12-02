@@ -1,8 +1,14 @@
 if GIT
-	echo "not making ze-git"
+SCRIPT = ze-git
+MAN = ze-git.1
 else
-dist_bin_SCRIPTS = ze-git
-ze-git.1:
-	@echo ""
-dist_man1_MANS = ze-git.1
+SCRIPT =
+MAN =
 endif
+
+dist_bin_SCRIPTS = $(SCRIPT)
+dist_man1_MANS = $(MAN)
+
+ze-git: ze-git.in
+	sed -e 's/ZETTEL_HOME/~\/.ze\/zettels/' < $? > $@
+	chmod +x $@

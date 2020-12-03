@@ -11,11 +11,9 @@ AC_CONFIG_HEADERS([config.h])
 AC_PROG_CC
 
 # Checks for libraries.
-PKG_CHECK_MODULES([LMDB], [lmdb])
+AC_CHECK_LIB([lmdb], [mdb_env_open])
 PKG_CHECK_MODULES([CHECK], [check >= 0.13.0], [],
 		   [echo "Check not installed; tests will be unable to run"])
-AC_SUBST([LMDB_CFLAGS])
-AC_SUBST([LMDB_LIBS])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])

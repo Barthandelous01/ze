@@ -3,11 +3,30 @@
 #include <stdio.h>
 
 #include "../src/conf.h"
+#include "../src/io.h"
 #include "../src/error.h"
 
-START_TEST (test_)
+/**
+ * test_conf_no_file() - test nonexistent config
+ *
+ * test_conf_no_file() tests for proper behavior if the config file
+ * specified does not exist.
+ */
+START_TEST (test_conf_no_file)
 {
-	;
+	char y[2*PATH_BUFSIZE];
+	home_prefix("/ZZZXZZconfig.conf", y);
+	remove(y);
+
+	config x;
+	parse_config("/ZZZXZZconfig.conf", &x);
+
+	ck_assert(x.head == NULL);
+
+	char z[CONF_KEY_SIZE];
+	int res2 = get_config(&x, "TESTING", z);
+
+	ck_assert(res2 == -EVAL);
 }
 END_TEST
 
@@ -28,7 +47,7 @@ Suite *conf_suite(void)
 	tc_core = tcase_create("Core");
 
 	/* Add each test to be run */
-	tcase_add_test(tc_core, test_);
+	tcase_add_test(tc_core, test_conf_no_file);
 
 	suite_add_tcase(s, tc_core);
 	return s;

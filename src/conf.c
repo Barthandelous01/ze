@@ -114,8 +114,10 @@ int parse_config(char *pathname, config *cfg)
 	home_prefix(pathname, pth);
 
 	struct stat st;
-	if(stat(pth, &st) != 0)
+	if(stat(pth, &st) != 0) {
+		cfg->head = NULL;
 		return SUCCESS;
+	}
 
 	FILE *fd = fopen(pth, "r");
 	if(!fd)

@@ -1,4 +1,5 @@
 #include <string.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -95,16 +96,16 @@ int get_record(db_context *DB, char *key, char *value)
 	char ret[200];
 	MDB_val ke, val;
 
+	memset(value, 0, sizeof(value));
+
 	ke.mv_data = key;
 	ke.mv_size = strlen(key);
 
-	val.mv_data = ret;
-	val.mv_size = 200;
-
+	
 	if(mdb_get(DB->txn, DB->dbi, &ke, &val))
 		return -EDBCUR;
 
-	strcpy(value, val.mv_data);
+	strncpy(value, val.mv_data, val.mv_size);
 	return SUCCESS;
 }
 

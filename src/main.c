@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <config.h>
 
@@ -51,7 +52,6 @@ static void print_index(config *cfg, db_context *DB)
 {
 	char path[2*PATH_BUFSIZE], val[CONF_KEY_SIZE];
 	int res = 0;
-
 	if ((res = get_config(cfg, "INDEX_NODE", val)) == 0) {
 		if ((res = get_record(DB, val, path)) != SUCCESS)
 			top_level_error(ERRZE"Zettel not found: %d\n", res);
@@ -82,8 +82,60 @@ static int get_zettel(db_context *DB, char *id, char *path)
 	if ((res = get_record(DB, id, temp)) != SUCCESS) {
 		return -EVAL;
 	} else {
-		home_prefix(temp, path);
+		strncpy(path, temp, 2*PATH_BUFSIZE);
 	}
+	return SUCCESS;
+}
+
+/**
+ * modify_zettel() - edit the zettel given by pathname
+ * @cfg: config context
+ * @pathname: the pathname to edit. HOME CANONICALIZED
+ *
+ * modify_zettel() is basically an interace-module frontend to
+ * io's edit_zettel(). Bubbles all errors up directly.
+ */
+static int modify_zettel(config *cfg, char *pathname)
+{
+	;
+}
+
+/**
+ * create_zettel() - add a zettel to the DB
+ * @DB: the database context
+ * @cfg: config context
+ *
+ * create_zettel() creates the next serial zettel and then offloads the work of
+ * writing it to edit_zettel(). Bubbles most errors up to caller unchanged, or
+ * SUCCESS on success.
+ */
+static int create_zettel(db_context *DB, config *cfg)
+{
+	int res;
+	char tmp[PATH_BUFSIZE], id[20], tmp2[PATH_BUFSIZE];
+	char conf_ext[CONF_KEY_SIZE];
+
+	if ((res = get_id(id)) != SUCCESS)
+		return res;
+
+	strcpy(tmp, ZETTEL_DIR);
+	printf("%s: ", "Please enter a title for the zettel, without spaces or"
+		" path seperators");
+	scanf("%s", tmp2);
+	strcat(tmp, "/");
+	strcat(tmp, tmp2);
+
+	if ((res = get_config(cfg, "FILE_FORMAT", conf_ext)) != SUCCESS)
+		strcat(tmp, DEF_EXT);
+	else
+		strcat(tmp, conf_ext);
+
+	if ((res = add_record(DB, id, tmp)) != SUCCESS)
+				return res;
+
+	if ((res = edit_zettel(cfg, tmp)) != SUCCESS)
+		return res;
+
 	return SUCCESS;
 }
 
@@ -124,10 +176,13 @@ int main (int argc, char **argv)
 		case 'h':
 			help();
 			break;
+		case 'n':
+			create_zettel(&db, &cfg);
+			break;
 		}
 	}
 
-	if ((quiet == 0) && (argc >= 2)) {
+	if (quiet == 0 && (argc >= 2)) {
 		char zettel[2*PATH_BUFSIZE];
 		for(int j = 1; j < argc; j++) {
 			res = get_zettel(&db, argv[j], zettel);
@@ -140,11 +195,12 @@ int main (int argc, char **argv)
 				top_level_error(ERRZE
 						"Zettel not found: %d\n", res);
 		}
-	} else {
+	} else if (quiet == 0 && (argc <= 1)) {
 		print_index(&cfg, &db);
 	}
 
-		if((res = close_id()))
+END:
+	if((res = close_id()))
 		top_level_error(ERRMAIN"close_id(): %d\n", res);
 
 	if((res = close_config(&cfg)))

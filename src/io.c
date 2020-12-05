@@ -78,12 +78,12 @@ int print_zettel(config *cfg, char *pathname)
 {
 	char path[2*PATH_BUFSIZE];
 	char conf_pager[CONF_KEY_SIZE] = "";
-	int pid;
+	int pid, res;
 
 	home_prefix(pathname, path);
-	get_config(cfg, "PAGER", conf_pager);
+	res = get_config(cfg, "PAGER", conf_pager);
 	if((pid = fork()) == 0) {
-		if (strcmp(conf_pager, "") == 0) {
+		if (res != SUCCESS) {
 			if(execl(DEF_PAGE, path, (char *)NULL)) {
 				if (raw_print(path))
 					return -EFILE;

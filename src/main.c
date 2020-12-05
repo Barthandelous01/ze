@@ -67,24 +67,28 @@ static void print_index(config *cfg, db_context *DB)
 
 /**
  * get_zettel() - get the path of a zettel
- * @cfg: the config struct pointer
+ * @DB: the database handle
  * @id: the id to print
  * @path: the resultant path of the zettel
  *
  * get_zettel() does a lookup in the db of zettel and returns
  * the full pathname of
  */
-static int get_zettel(config *cfg, char *id, char *path)
+static int get_zettel(db_context *DB, char *id, char *path)
 {
-	if(!cfg) {}
-	if(!id) {}
-	if(!path) {}
-	return 0;
+	char temp[2*PATH_BUFSIZE];
+	int res;
+
+	if ((res = get_record(DB, id, temp)) != SUCCESS) {
+		return -EVAL;
+	} else {
+		home_prefix(temp, path);
+	}
+	return SUCCESS;
 }
 
 int main (int argc, char **argv)
 {
-	fprintf(stderr, "%d\n", -EDBCUR);
 	int res, ch;
 	config cfg;
 
@@ -124,14 +128,23 @@ int main (int argc, char **argv)
 	}
 
 	if ((quiet == 0) && (argc >= 2)) {
+		char zettel[2*PATH_BUFSIZE];
 		for(int j = 1; j < argc; j++) {
-			printf("Got arg: %s\n", argv[j]);
+			res = get_zettel(&db, argv[j], zettel);
+			if(res != SUCCESS)
+				top_level_error(ERRZE
+						"Zettel not found: %d\n", res);
+
+			res = print_zettel(&cfg, zettel);
+			if(res != SUCCESS)
+				top_level_error(ERRZE
+						"Zettel not found: %d\n", res);
 		}
 	} else {
 		print_index(&cfg, &db);
 	}
 
-	if((res = close_id()))
+		if((res = close_id()))
 		top_level_error(ERRMAIN"close_id(): %d\n", res);
 
 	if((res = close_config(&cfg)))

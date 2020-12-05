@@ -60,7 +60,81 @@ START_TEST (test_conf_empty_file)
 	ck_assert(res2 == -EVAL);
 
 	close_config(&x);
+
+	remove(y);
 }
+
+/**
+ * test_conf_garbage_file() - test garbage file
+ *
+ * Make sure that parse_config() doesn't implode when fed a
+ * garbage file.
+ */
+START_TEST (test_conf_garbage_file)
+{
+	char y[2*PATH_BUFSIZE];
+	home_prefix("/ZZZXZZconfig.conf", y);
+	remove(y);
+
+	FILE *fd = fopen(y, "w");
+	if(fd == NULL)
+		ck_abort_msg("Could not create file %s after deleting\n", y);
+	fprintf(fd, "sefah32983hfasdf&#R98hssef\njf3qh\n\tq3f9jsdf\n\nTESTING=HELLO");
+	if(fclose(fd) != 0)
+		ck_abort_msg("Could not close file %s\n", y);
+
+	config x;
+	parse_config("/ZZZXZZconfig.conf", &x);
+
+	char z[CONF_KEY_SIZE];
+	int res2 = get_config(&x, "TESTING", z);
+
+	ck_assert(res2 == -EVAL);
+
+	close_config(&x);
+
+	remove(y);
+}
+END_TEST
+
+/**
+ * test_conf_normal() - test on a normal config file
+ *
+ * Make sure that parse_config() does correctly parse a syntactically
+ * correct config file.
+ */
+START_TEST(test_conf_normal)
+{
+	char y[2*PATH_BUFSIZE];
+	home_prefix("/ZZZXZZconfig.conf", y);
+	remove(y);
+
+	FILE *fd = fopen(y, "w");
+	if(fd == NULL)
+		ck_abort_msg("Could not create file %s after deleting\n", y);
+	fprintf(fd, "TESTING=HELLO\nEMPTY=\n# HI=BYE");
+	if(fclose(fd) != 0)
+		ck_abort_msg("Could not close file %s\n", y);
+
+	config x;
+	parse_config("/ZZZXZZconfig.conf", &x);
+
+	char z[CONF_KEY_SIZE];
+
+	get_config(&x, "TESTING", z);
+	ck_assert_pstr_eq(z, "HELLO");
+
+	get_config(&x, "EMPTY", z);
+	ck_assert_pstr_eq(z, "");
+
+	int res = get_config(&x, "HI", z);
+	ck_assert(res == -EVAL);
+
+	close_config(&x);
+
+	remove(y);
+}
+END_TEST
 
 /**
  * conf_suite() - generate the test suite for id
@@ -80,6 +154,8 @@ Suite *conf_suite(void)
 	/* Add each test to be run */
 	tcase_add_test(tc_core, test_conf_no_file);
 	tcase_add_test(tc_core, test_conf_empty_file);
+	tcase_add_test(tc_core, test_conf_garbage_file);
+	tcase_add_test(tc_core, test_conf_normal);
 
 	suite_add_tcase(s, tc_core);
 	return s;

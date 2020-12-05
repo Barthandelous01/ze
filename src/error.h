@@ -33,6 +33,8 @@
 
 /* error prefix string for failure in main */
 #define ERRMAIN  "[ERROR] in "
+/* error prefix for no zettel */
+#define ERRZE    "[ZETTEL] "
 
 /* error for file open/close errors          */
 #define EFILE    (1 << 1)

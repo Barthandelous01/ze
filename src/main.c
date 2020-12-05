@@ -16,7 +16,7 @@ static void version()
 License RBSD 3-Clause License.\n\
 This is free software; you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n");
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 static void help()
@@ -27,8 +27,8 @@ static void help()
 		"\t-v, --version      Print version information\n"
 		"\t-h, --help         Print this message and exit\n"
 		"\t-n, --new          Create a new zettel\n"
-		"\t -e, --edit [id]   Edit the zettel [id]\n"
-		"\t -r, --remove [id] Remove the zettel [id] (DANGEROUS!)\n");
+		"\t-e, --edit [id]   Edit the zettel [id]\n"
+		"\t-r, --remove [id] Remove the zettel [id] (DANGEROUS!)\n");
 	exit(EXIT_SUCCESS);
 }
 
@@ -38,8 +38,53 @@ static void top_level_error(char *format, int code)
 	exit(code);
 }
 
+/**
+ * print_index() - print index zettel
+ * @cfg: the config struct to use to check for default zettel
+ * @DB: the database of zettel
+ *
+ * print_index() prints the index zettel, which defaults to
+ * 000001, checking if a different index zettel has been set in
+ * the user config file.
+ */
+static void print_index(config *cfg, db_context *DB)
+{
+	char path[2*PATH_BUFSIZE], val[CONF_KEY_SIZE];
+	int res = 0;
+
+	if ((res = get_config(cfg, "INDEX_NODE", val)) == 0) {
+		if ((res = get_record(DB, val, path)) != SUCCESS)
+			top_level_error(ERRZE"Zettel not found: %d\n", res);
+		else
+			print_zettel(cfg, path);
+	} else {
+		if ((res = get_record(DB, "000001", path)) != SUCCESS)
+			top_level_error(ERRZE"Zettel not found: %d\n", res);
+		else
+			print_zettel(cfg, path);
+	}
+}
+
+/**
+ * get_zettel() - get the path of a zettel
+ * @cfg: the config struct pointer
+ * @id: the id to print
+ * @path: the resultant path of the zettel
+ *
+ * get_zettel() does a lookup in the db of zettel and returns
+ * the full pathname of
+ */
+static int get_zettel(config *cfg, char *id, char *path)
+{
+	if(!cfg) {}
+	if(!id) {}
+	if(!path) {}
+	return 0;
+}
+
 int main (int argc, char **argv)
 {
+	fprintf(stderr, "%d\n", -EDBCUR);
 	int res, ch;
 	config cfg;
 
@@ -78,10 +123,13 @@ int main (int argc, char **argv)
 		}
 	}
 
-	if ((quiet == 0) && (argc >= 2))
-		printf("Got single arg: %s\n", argv[1]);
-	else
-		printf("Do default thing\n");
+	if ((quiet == 0) && (argc >= 2)) {
+		for(int j = 1; j < argc; j++) {
+			printf("Got arg: %s\n", argv[j]);
+		}
+	} else {
+		print_index(&cfg, &db);
+	}
 
 	if((res = close_id()))
 		top_level_error(ERRMAIN"close_id(): %d\n", res);

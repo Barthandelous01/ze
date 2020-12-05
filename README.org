@@ -15,12 +15,11 @@
     ze -r [id]                # remove a note
     ze -n                     # interactively make a note
     ze -e [id]                # edit a note
-    ze -l                     # list notes (in a grep-able format)
   #+END_SRC
 
 ** Installation
 
-   Installation is simple. Either download a tarball, or run ~autoconf -i~ to
+   Installation is simple. Either download a tarball, or run ~./bootstrap~ to
    set up the build system. Then run
 
    #+BEGIN_SRC sh
@@ -63,7 +62,7 @@
   optional. Want to use [[http://darcs.net/][darcs]] or [[https://subversion.apache.org/][svn]], you can feel free to not bloat your
   install and use those by hand instead. ~ze~ also titles your zettel in a human
   -readable way, so that you can quickly do something like
-  ~ls -l \~/.ze/zettels | grep 'name'~. 
+  ~ls -l /home/$USER/.ze/zettels | grep 'name'~. 
 
 * Why ~ze~?
 
@@ -91,7 +90,8 @@
 
      ~ze~ doesn't try to lock you into a format, or a display method, or even
      provide a system to publish your zettel into a website. It is, simply, an
-     index and interface to a lot of plain text files.
+     index and interface to a lot of plain text files. What you do with them
+     from there is your choice.
 
   4. It's minimal.
 
@@ -99,7 +99,9 @@
      doesn't provide any features it doesn't need to. All ~ze~ does is print
      and edit zettel, and keep track of their IDs in a database. Even
      syncronization is handled through an external script. No GUI, no bloat,
-     just plain =--std=c99= and standard *nix libraries.
+     just plain =--std=c99= and standard *nix libraries. Of course, that doesn't
+     mean unstable, or fraught with bugs. ~ze~ uses regression tests to ensure
+     that refactoring is easy and bug free.
 
 * Hacking
 
@@ -130,7 +132,10 @@
     - ~Makefile.am~
     - ~src/Makefile.am~
     - ~git/Makefile.am~
+    - ~tests/Makefile.am~
   - =doc=: documentation for various things. Found in:
     - ~README.org~
     - ~src/ze.1~
     - ~git/ze-git.1~
+  - =tests=: regression tests. Found in:
+    - ~tests/check_*.c~

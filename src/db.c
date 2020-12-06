@@ -96,7 +96,7 @@ int get_record(db_context *DB, char *key, char *value)
 	char ret[200];
 	MDB_val ke, val;
 
-	memset(value, 0, sizeof(value));
+	memset(ret, '\0', 200);
 
 	ke.mv_data = key;
 	ke.mv_size = strlen(key);

@@ -14,7 +14,7 @@
 /* buffer size for printing zettel */
 #define BUF_CHUNKSIZE   8192
 /* default pager */
-#define DEF_PAGE        "/usr/bin/bat", "bat"
+#define DEF_PAGE        "/usr/bin/bat", "/usr/bin/bat"
 /* default editor */
 #define DEF_EDIT        "/usr/bin/ed", "ed"
 /* Size for config keys */

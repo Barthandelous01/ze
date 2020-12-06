@@ -77,10 +77,17 @@ static int raw_print(char *pathname)
 int print_zettel(config *cfg, char *pathname)
 {
 	char path[2*PATH_BUFSIZE];
-	char conf_pager[CONF_KEY_SIZE] = "";
+	char conf_pager[CONF_KEY_SIZE];
 	int pid, res;
 
+	memset(path, '\0', 2*PATH_BUFSIZE);
+
 	home_prefix(pathname, path);
+
+	struct stat st = {0};
+	if (stat(path, &st) == -1)
+		return -EFILE;
+
 	res = get_config(cfg, "PAGER", conf_pager);
 	if((pid = fork()) == 0) {
 		if (res != SUCCESS) {
@@ -114,12 +121,14 @@ int edit_zettel(void *cfg, char *pathname)
 {
 	char path[2*PATH_BUFSIZE];
 	char conf_editor[CONF_KEY_SIZE];
-	int pid;
+	int pid, res;
+
+	memset(path, '\0', 2*PATH_BUFSIZE);
 
 	home_prefix(pathname, path);
-	get_config(cfg, "EDITOR", conf_editor);
+	res = get_config(cfg, "EDITOR", conf_editor);
 	if ((pid = fork()) == 0) {
-		if(strcmp(conf_editor, "") == 0) {
+		if(res == SUCCESS) {
 			if(execl(getenv("EDITOR"), getenv("EDITOR"), path, (char *)NULL))
 				execl(DEF_EDIT, path, (char *)NULL);
 		} else {

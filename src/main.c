@@ -51,6 +51,7 @@ static void top_level_error(char *format, int code)
 static void print_index(config *cfg, db_context *DB)
 {
 	char path[2*PATH_BUFSIZE], val[CONF_KEY_SIZE];
+	memset(path, '\0', 2*PATH_BUFSIZE);
 	int res = 0;
 	if ((res = get_config(cfg, "INDEX_NODE", val)) == 0) {
 		if ((res = get_record(DB, val, path)) != SUCCESS)
@@ -112,11 +113,13 @@ static int modify_zettel(config *cfg, char *pathname)
 static int create_zettel(db_context *DB, config *cfg)
 {
 	int res;
-	char tmp[PATH_BUFSIZE], id[20], tmp2[PATH_BUFSIZE];
+	char tmp[2*PATH_BUFSIZE], id[20], tmp2[PATH_BUFSIZE];
 	char conf_ext[CONF_KEY_SIZE];
 
+	memset(tmp, '\0', 2*PATH_BUFSIZE);
+
 	if ((res = get_id(id)) != SUCCESS)
-		return res;
+			return res;
 
 	strcpy(tmp, ZETTEL_DIR);
 	printf("%s: ", "Please enter a title for the zettel, without spaces or"
@@ -131,7 +134,7 @@ static int create_zettel(db_context *DB, config *cfg)
 		strcat(tmp, conf_ext);
 
 	if ((res = add_record(DB, id, tmp)) != SUCCESS)
-				return res;
+		return res;
 
 	if ((res = edit_zettel(cfg, tmp)) != SUCCESS)
 		return res;
@@ -177,7 +180,8 @@ int main (int argc, char **argv)
 			help();
 			break;
 		case 'n':
-			create_zettel(&db, &cfg);
+			if ((res = create_zettel(&db, &cfg)) != SUCCESS)
+				top_level_error(ERRMAIN"Making zettel: %d\n", res);
 			break;
 		}
 	}

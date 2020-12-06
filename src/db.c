@@ -102,7 +102,7 @@ int get_record(db_context *DB, char *key, char *value)
 	ke.mv_size = strlen(key);
 
 	
-	if(mdb_get(DB->txn, DB->dbi, &ke, &val))
+	if(mdb_cursor_get(DB->cursor, &ke, &val, MDB_NEXT))
 		return -EDBCUR;
 
 	strncpy(value, val.mv_data, val.mv_size);

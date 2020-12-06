@@ -121,14 +121,12 @@ int edit_zettel(void *cfg, char *pathname)
 {
 	char path[2*PATH_BUFSIZE];
 	char conf_editor[CONF_KEY_SIZE];
-	int pid, res;
-
-	memset(path, '\0', 2*PATH_BUFSIZE);
+	int pid = 0, res;
 
 	home_prefix(pathname, path);
 	res = get_config(cfg, "EDITOR", conf_editor);
 	if ((pid = fork()) == 0) {
-		if(res == SUCCESS) {
+		if(res != SUCCESS) {
 			if(execl(getenv("EDITOR"), getenv("EDITOR"), path, (char *)NULL))
 				execl(DEF_EDIT, path, (char *)NULL);
 		} else {

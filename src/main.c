@@ -55,12 +55,12 @@ static void print_index(config *cfg, db_context *DB)
 	int res = 0;
 	if ((res = get_config(cfg, "INDEX_NODE", val)) == 0) {
 		if ((res = get_record(DB, val, path)) != SUCCESS)
-			top_level_error(ERRZE"Zettel not found: %d\n", res);
+			top_level_error(ERRZE"Zettel not found [1]: %d\n", res);
 		else
 			print_zettel(cfg, path);
 	} else {
 		if ((res = get_record(DB, "000001", path)) != SUCCESS)
-			top_level_error(ERRZE"Zettel not found: %d\n", res);
+			top_level_error(ERRZE"Zettel not found [2]: %d\n", res);
 		else
 			print_zettel(cfg, path);
 	}
@@ -96,10 +96,10 @@ static int get_zettel(db_context *DB, char *id, char *path)
  * modify_zettel() is basically an interace-module frontend to
  * io's edit_zettel(). Bubbles all errors up directly.
  */
-static int modify_zettel(config *cfg, char *pathname)
-{
-	;
-}
+/*static int modify_zettel(config *cfg, char *pathname)
+  {
+  ;
+  }*/
 
 /**
  * create_zettel() - add a zettel to the DB
@@ -192,18 +192,17 @@ int main (int argc, char **argv)
 			res = get_zettel(&db, argv[j], zettel);
 			if(res != SUCCESS)
 				top_level_error(ERRZE
-						"Zettel not found: %d\n", res);
+						"Zettel not found [3]: %d\n", res);
 
 			res = print_zettel(&cfg, zettel);
 			if(res != SUCCESS)
 				top_level_error(ERRZE
-						"Zettel not found: %d\n", res);
+						"Zettel not found [4]: %d\n", res);
 		}
 	} else if (quiet == 0 && (argc <= 1)) {
 		print_index(&cfg, &db);
 	}
 
-END:
 	if((res = close_id()))
 		top_level_error(ERRMAIN"close_id(): %d\n", res);
 

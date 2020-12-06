@@ -36,7 +36,7 @@ int init_db(db_context *DB)
 	if (mdb_open(DB->txn, NULL, MDB_CREATE, &DB->dbi))
 		return -EDBTRX;
 
-	if (mdb_cursor_open(DB->txn, DB->dbi, &DB->cursor))
+	if(mdb_cursor_open(DB->txn, DB->dbi, &DB->cursor))
 		return -EDBCUR;
 
 	return SUCCESS;
@@ -93,19 +93,33 @@ int add_record(db_context *DB, char *key, char *value)
  */
 int get_record(db_context *DB, char *key, char *value)
 {
-	char ret[200];
-	MDB_val ke, val;
-
-	memset(ret, '\0', 200);
+	MDB_val ke, val, temp;
 
 	ke.mv_data = key;
 	ke.mv_size = strlen(key);
 
-	
-	if(mdb_cursor_get(DB->cursor, &ke, &val, MDB_NEXT))
+	/* Oh, how I wish I'd picked a different database... Here's the rub. */
+	/* LMDB only supports one-directional reads. And that's all. You go  */
+	/* one way through, no choice about it. To go back requires setting  */
+	/* your cursor back to the previous one, and while-loops are rather  */
+	/* inefficient. Therefore, you use the nightmarish MDB_FIRST cursor  */
+	/* operation to go back to the beginning of the database. That's why */
+	/* there's this duplicity of operations. Since we can't sort CLI     */
+	/* args, we can't just sort them and display them sequentially,      */
+	/* either. So, we go back to the beginning of the DB *every stinging */
+	/* time* just to make sure we don't get any weird non-extant zettel  */
+	/* errors even when the zettel do exist.                             */
+	/*                                                                   */
+	/* Welcome to the wonderful world of C. We hope you like it here.    */
+	if (mdb_cursor_get(DB->cursor, &temp, NULL, MDB_FIRST))
+		return -EDBCUR;
+
+	if(mdb_cursor_get(DB->cursor, &ke, &val, MDB_SET_KEY))
 		return -EDBCUR;
 
 	strncpy(value, val.mv_data, val.mv_size);
+	value[val.mv_size] = '\0';
+
 	return SUCCESS;
 }
 

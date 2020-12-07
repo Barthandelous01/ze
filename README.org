@@ -12,7 +12,6 @@
   #+BEGIN_SRC sh
     ze                        # print index note
     ze [id...]                # print the notes with [id]s
-    ze -r [id]                # remove a note
     ze -n                     # interactively make a note
     ze -e [id]                # edit a note
   #+END_SRC
@@ -21,7 +20,7 @@
 
    Installation is simple. Either download a tarball, or run ~./bootstrap~ to
    set up the build system. Then run
-
+n
    #+BEGIN_SRC sh
      ./configure # optionally, --enable-git
      make
@@ -53,16 +52,16 @@
 * Philosophy
 
   ~ze~ is entirely workflow-agnostic. Want to use markdown for your notes? Go
-  ahead. Just set the =FILE_FORMAT= config value to =md=. Prefer org-mode's
-  integration with emacs? Set =FILE_FORMAT= to =org= instead. ~ze~
+  ahead. Just set the =FILE_FORMAT= config value to =.md=. Prefer org-mode's
+  integration with emacs? Set =FILE_FORMAT= to =.org= instead. ~ze~
   doesn't make you use a specific pager, editor, file format, or synchronization
   scheme. There is an optional perl script, enabled with the configure flag
   ~--enable-git~, that allows an easy and automated frontend to carrying your
   zettelkasten around with you across different machines, but it is entirely
-  optional. Want to use [[http://darcs.net/][darcs]] or [[https://subversion.apache.org/][svn]], you can feel free to not bloat your
+  optional. Want to use [[http://darcs.net/][darcs]] or [[https://subversion.apache.org/][svn]]? You can feel free to not bloat your
   install and use those by hand instead. ~ze~ also titles your zettel in a human
   -readable way, so that you can quickly do something like
-  ~ls -l /home/$USER/.ze/zettels | grep 'name'~. 
+  =ls -l /home/$USER/.ze/zettels | grep 'name'=. 
 
 * Why ~ze~?
 

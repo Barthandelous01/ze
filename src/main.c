@@ -28,8 +28,7 @@ static void help()
 		"\t-v, --version      Print version information\n"
 		"\t-h, --help         Print this message and exit\n"
 		"\t-n, --new          Create a new zettel\n"
-		"\t-e, --edit [id]   Edit the zettel [id]\n"
-		"\t-r, --remove [id] Remove the zettel [id] (DANGEROUS!)\n");
+		"\t-e, --edit [id]   Edit the zettel [id]\n");
 	exit(EXIT_SUCCESS);
 }
 

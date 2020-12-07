@@ -1,5 +1,11 @@
+#include <config.h>
+
 #include <stdio.h>
+
 #include <stdlib.h>
+#ifndef HAVE_MALLOC
+#  error "ze requires a working `malloc' function"
+#endif
 #include <string.h>
 #include <sys/stat.h>
 

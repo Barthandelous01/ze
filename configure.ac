@@ -16,7 +16,7 @@ PKG_CHECK_MODULES([CHECK], [check >= 0.13.0], [],
 		   [echo "Check not installed; tests will be unable to run"])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([string.h unistd.h fcntl.h])
 
 # Checks for library functions.
 AC_FUNC_MALLOC

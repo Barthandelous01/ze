@@ -1,9 +1,18 @@
+#include <config.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+#else
+#  error "You need at least a *nix compatability layer to use ze"
+#endif	/* HAVE_UNISTD_H */
 #include <sys/stat.h>
-#include <fcntl.h>
+#ifdef HAVE_FCNTL_H
+#  include <fcntl.h>
+#else
+#  error "You need at least a *nix compatability layer to use ze"
+#endif	/* HAVE_FNCTL_H */
 #include <sys/wait.h>
 
 #include "error.h"
@@ -50,7 +59,7 @@ static int raw_print(char *pathname)
 	if(buf.st_size < BUF_CHUNKSIZE) {
                 /* The file fits in one chunk */
 		read(fd, buffer, buf.st_size);
-		write(fileno(stdout), buffer, buf.st_size);
+		write(STDOUT_FILENO, buffer, buf.st_size);
 	} else {
 		/* we need to do more than one read */
 		do {
@@ -154,7 +163,12 @@ static void check_dir(char *dir)
 	home_prefix(dir, path);
 	struct stat st = {0};
 	if (stat(path, &st) == -1)
+#ifdef HAVE_MKDIR
 		mkdir(path, 0777);
+#else
+	fprintf(stderr, "Please ensure that %s exists; your system does not"
+		" support mkdir.\n", dir);
+#endif	/* HAVE_MKDIR */
 }
 
 /**

@@ -90,16 +90,28 @@ static int get_zettel(db_context *DB, char *id, char *path)
 
 /**
  * modify_zettel() - edit the zettel given by pathname
+ * @DB: the database
  * @cfg: config context
  * @pathname: the pathname to edit. HOME CANONICALIZED
  *
  * modify_zettel() is basically an interace-module frontend to
  * io's edit_zettel(). Bubbles all errors up directly.
  */
-/*static int modify_zettel(config *cfg, char *pathname)
-  {
-  ;
-  }*/
+static int modify_zettel(db_context *DB, config *cfg, char *id)
+{
+	char tmp[2*PATH_BUFSIZE];
+	int res;
+
+	memset(tmp, '\0', 2*PATH_BUFSIZE);
+
+	if ((res = get_record(DB, id, tmp)) != SUCCESS)
+		return res;
+
+	if ((res = edit_zettel(cfg, tmp)) != SUCCESS)
+		return res;
+	
+	return SUCCESS;
+}
 
 /**
  * create_zettel() - add a zettel to the DB
@@ -181,7 +193,14 @@ int main (int argc, char **argv)
 			break;
 		case 'n':
 			if ((res = create_zettel(&db, &cfg)) != SUCCESS)
-				top_level_error(ERRMAIN"Making zettel: %d\n", res);
+				top_level_error(ERRMAIN
+						"Making zettel: %d\n", res);
+			break;
+		case 'e':
+			if ((res = modify_zettel(&db, &cfg, argv[--optind]))
+				!= SUCCESS)
+				top_level_error(ERRMAIN
+						"Editing zettel: %d\n", res);
 			break;
 		}
 	}

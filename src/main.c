@@ -39,6 +39,36 @@ static void top_level_error(char *format, int code)
 }
 
 /**
+ * list_zettel() - list zettel in a readable format
+ * @DB: the database of zettel
+ * @cfg: config struct
+ *
+ * List zettel in a coherent format. Uses the DB in a
+ * relatively low-level way.
+ */
+static int list_zettel(db_context *DB, config *cfg)
+{
+	MDB_val ke, val;
+	char conf[CONF_KEY_SIZE];
+	int res;
+
+	if ((res = get_config(cfg, "LIST_SEPERATOR", conf)) != SUCCESS)
+		strcpy(conf, " ");
+
+	if (mdb_cursor_get(DB->cursor, &ke, &val, MDB_FIRST))
+		return -EDBCUR;
+
+	do {
+		printf("%.*s%s~%.*s\n",
+			(int)ke.mv_size, ke.mv_data,
+			conf,
+			(int)val.mv_size, val.mv_data);
+	} while (mdb_cursor_get(DB->cursor, &ke, &val, MDB_NEXT) == SUCCESS);
+
+	return SUCCESS;
+}
+
+/**
  * print_index() - print index zettel
  * @cfg: the config struct to use to check for default zettel
  * @DB: the database of zettel
@@ -177,10 +207,10 @@ int main (int argc, char **argv)
 		{"help",       no_argument,       NULL, 'h'},
 		{"new",        no_argument,       NULL, 'n'},
 		{"edit",       required_argument, NULL, 'e'},
-		{"remove",     required_argument, NULL, 'r'}
+		{"list",       no_argument,       NULL, 'l'}
 	};
 
-	while ((ch = getopt_long(argc, argv, "Vhne:r:", longopts, NULL)) != -1)
+	while ((ch = getopt_long(argc, argv, "Vhne:r:l", longopts, NULL)) != -1)
 	{
 		quiet = 1;
 		switch(ch) {
@@ -200,6 +230,11 @@ int main (int argc, char **argv)
 				!= SUCCESS)
 				top_level_error(ERRMAIN
 						"Editing zettel: %d\n", res);
+			break;
+		case 'l':
+			if ((res = list_zettel(&db, &cfg)) != SUCCESS)
+				top_level_error(ERRMAIN
+						"Listing zettel: %d\n", res);
 			break;
 		}
 	}

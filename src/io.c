@@ -41,13 +41,15 @@ void home_prefix(char *postfix, char *result)
 /**
  * raw_print() - print a raw file
  * @pathname: the path to the zettel to print
+ * @cfg: config map handle
  *
  * Efficiently print a zettel file. Uses buffering (similar to
  * cat(1)) in order to print the zettel as fast as possible.
  * The methods are influeneced by GNU yes.
  */
-static int raw_print(char *pathname)
+static int raw_print(config *cfg, char *pathname)
 {
+	char option[CONF_KEY_SIZE];
 	int fd = open(pathname, O_RDONLY);
 	if (!fd)
 		return -EFILE;
@@ -55,6 +57,10 @@ static int raw_print(char *pathname)
 	struct stat buf;
 	fstat(fd, &buf);
 	char buffer[BUF_CHUNKSIZE];
+
+	if (get_config(cfg, "PRETTY_RAW", option) == SUCCESS)
+		fprintf(stdout, "%s\n=========================\n",
+			pathname);
 
 	if(buf.st_size < BUF_CHUNKSIZE) {
                 /* The file fits in one chunk */
@@ -100,12 +106,12 @@ int print_zettel(config *cfg, char *pathname)
 	if((pid = fork()) == 0) {
 		if (res != SUCCESS) {
 			if(execl(DEF_PAGE, path, (char *)NULL)) {
-				if (raw_print(path))
+				if (raw_print(cfg, path))
 					return -EFILE;
 			}
 		} else {
 			if(execl(conf_pager, conf_pager, path, (char *) NULL)) {
-				if(raw_print(path))
+				if(raw_print(cfg, path))
 					return -EFILE;
 			}
 		}

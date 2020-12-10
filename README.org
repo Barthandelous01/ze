@@ -14,13 +14,14 @@
     ze [id...]                # print the notes with [id]s
     ze -n                     # interactively make a note
     ze -e [id]                # edit a note
+    ze -l                     # list zettel in a human-readable fashion
   #+END_SRC
 
 ** Installation
 
    Installation is simple. Either download a tarball, or run ~./bootstrap~ to
    set up the build system. Then run
-n
+
    #+BEGIN_SRC sh
      ./configure # optionally, --enable-git
      make
@@ -59,9 +60,9 @@ n
   ~--enable-git~, that allows an easy and automated frontend to carrying your
   zettelkasten around with you across different machines, but it is entirely
   optional. Want to use [[http://darcs.net/][darcs]] or [[https://subversion.apache.org/][svn]]? You can feel free to not bloat your
-  install and use those by hand instead. ~ze~ also titles your zettel in a human
-  -readable way, so that you can quickly do something like
-  =ls -l /home/$USER/.ze/zettels | grep 'name'=. 
+  install and use those by hand instead. ~ze~ also titles your zettel in a
+  human-readable way, so that you can quickly do something like
+  =ze -l | grep 'name'=. 
 
 * Why ~ze~?
 

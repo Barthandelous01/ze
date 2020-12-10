@@ -2,13 +2,13 @@
 .SH NAME
 ze \- a Unix-y implimentation of a zettelkasten
 .SH SYNOPSIS
-ze -r [id]
-.br
 ze -n
 .br
 ze -e [id]
 .br
 ze [id...]
+.br
+ze -l
 .br
 .SH DESCRIPTION
 Access a digital zettelkasten, or knowledge web. Display multiple zettel,
@@ -27,6 +27,9 @@ Print a basic help message.
 \fB\-n\fR, \fB\-\-new\fR
 Create a new note interactively.
 .TP
+\fB\-l\fR, \fB\-\-list\fR
+List notes in a human-readable format.
+.TP
 \fB\-e\fR, \fB\-\-edit\fR [id]
 Edit an existing note.
 .TP
@@ -36,21 +39,33 @@ Print the given IDs.
 .BR ze(1)
 can easily be configured using the config file found at
 .BR $HOME/.ze/ze.conf.
-It uses a straightforward key=value pair system, and supports
+It uses a straightforward key=value pair system (note the lack of spaces),
+and supports
 .BR #
 as a comment character.
 \&
-
 .EE
 .in
 .EX
+\&
+.br
 # Set the editor
+.br
 EDITOR=/usr/bin/emacs
+.br
 # Set the pager
+.br
 # Might prefer the default, so leave it commented
+.br
 # PAGER=/usr/bin/less
-
-
+.br
+\&
+.in
+Please notice that these settings do
+.BR NOT
+respect
+.BR $PATH
+; in other words, these must be path-independent.
 The current options available to the config file are:
 .TP
 \fB EDITOR \fR\&
@@ -69,5 +84,9 @@ is not installed) will add extra pretty-printing.
 .TP
 \fB LIST_SEPERATOR \fR\&
 The character to seperate IDs and names from --list. Defaults to " "
+.TP
+\fB INDEX_NODE \fR\&
+The index node to be printed if no args are given. Defaults to "000001"
+
 
 

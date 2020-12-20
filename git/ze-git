@@ -49,15 +49,16 @@ sub usage() {
     exit(1);
 }
 
-sub git_init() {
+sub git_init {
     my $url = shift;
-    `git init ~/.ze/zettels/`;
-    `git origin add url`;
-    git_pull();
+    `git init`;
+    `git remote add origin ${url}`;
+    git_commit();
+    git_push();
 }
 
-sub git_commit() {
-    `git add ~/.ze/zettels/`;
+sub git_commit {
+    `git add .`;
     my $message = shift;
     if ($message != "") {
 	`git commit -m $message`;
@@ -68,7 +69,7 @@ sub git_commit() {
 }
 
 sub git_push() {
-    `git push`;
+    `git push --set-upstream origin master`;
 }
 
 sub git_pull() {
@@ -76,12 +77,13 @@ sub git_pull() {
 }
 
 sub main() {
+    chdir "$ENV{\"HOME\"}/.ze/zettels/";
     if (scalar(@ARGV) == 0) {
 	usage();
     }
     for ($ARGV[0]) {
-	when("init") { git_init() }
-	when("commit") { git_commit() }
+	when("init") { git_init($ARGV[1]) }
+	when("commit") { git_commit($ARGV[1]) }
 	when("push") { git_push() }
 	when("pull") { git_pull() }
 	default { usage() }

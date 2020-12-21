@@ -1,7 +1,7 @@
 #include <config.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
+
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #else
@@ -58,9 +58,10 @@ static int raw_print(config *cfg, char *pathname)
 	fstat(fd, &buf);
 	char buffer[BUF_CHUNKSIZE];
 
-	if (get_config(cfg, "PRETTY_RAW", option) == SUCCESS)
-		fprintf(stdout, "%s\n=========================\n",
-			pathname);
+	if (get_config(cfg, "PRETTY_RAW", option) == SUCCESS) {
+		write(STDOUT_FILENO, pathname, strnlen(pathname, (2*PATH_BUFSIZE)));
+		write(STDOUT_FILENO, "\n===============\n", 18);
+	}
 
 	if(buf.st_size < BUF_CHUNKSIZE) {
                 /* The file fits in one chunk */
@@ -72,7 +73,7 @@ static int raw_print(config *cfg, char *pathname)
 			memset(buffer, 0, BUF_CHUNKSIZE);
 			if(read(fd, buffer, BUF_CHUNKSIZE) == 0)
 				break;
-		} while(write(fileno(stdout), buffer, BUF_CHUNKSIZE)
+		} while(write(STDOUT_FILENO, buffer, BUF_CHUNKSIZE)
 			== BUF_CHUNKSIZE);
 	}
 

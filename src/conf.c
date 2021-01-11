@@ -2,49 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "io.h"
 
 #include "conf.h"
 
-/**
- * read_config_line() - reads one line of a config file
- * @fd: the file to read frome
- * @key: the buffer to write the key into
- * @val: the buffer to write the val into
- *
- * read_config_line() reads one line into a key-value pair for a
- * config_item. Returns SUCCESS on success, or negative on failure.
- */
-static int read_config_line(FILE *fd, char *key, char *val)
-{
-	int i = 0, j = 0;
-	/* get first key */
-	for(; i < CONF_KEY_SIZE-1
-		    && (j = fgetc(fd)) != '='
-		    && j != EOF
-		    && j != '#'; i++)
-		key[i] = j;
-	/* null terminate */
-	key[i] = '\0';
-	if (j == EOF)
-		return EOF;
-
-	int k = 0;
-	/* get value */
-	for(; k < CONF_KEY_SIZE-1
-		    && (j = fgetc(fd))
-		    && j != EOF
-		    && j != '#'
-		    && j != '\n'; k++)
-		val[k] = j;
-	/* null-terminate */
-	val[k] = '\0';
-	if(j == EOF)
-		return EOF;
-	/* success */
-	return SUCCESS;
-}
+#include "lexer.h"
+#include "parser.h"
 
 /**
  * append_config() - append a pair to the config struct
@@ -53,7 +19,7 @@ static int read_config_line(FILE *fd, char *key, char *val)
  *
  * Append *item to the *cfg linked list.
  */
-static void append_config(config *cfg, config_item *item)
+void append_config(config *cfg, config_item *item)
 {
 	config_item *temp;
 	temp = cfg->head;
@@ -108,31 +74,39 @@ int close_config(config *cfg)
  */
 int parse_config(char *pathname, config *cfg)
 {
-	char x[CONF_KEY_SIZE], y[CONF_KEY_SIZE];
 	char pth[2*PATH_BUFSIZE];
 	config_item *item;
+	int fd;
+	char *file;
+	cfg->head = NULL;
+
 	home_prefix(pathname, pth);
 
-	cfg->head = NULL;
+	void *scanner;
+	YY_BUFFER_STATE state;
+
+	if (yylex_init(&scanner))
+		return -EVAL;
 
 	struct stat st;
 	if(stat(pth, &st) != 0)
 		return SUCCESS;
 
-	FILE *fd = fopen(pth, "r");
-	if(!fd)
+	if ((fd = open(pth, O_RDONLY)) == 0)
 		return -EFILE;
 
-	while(read_config_line(fd, x, y) != EOF) {
-		item = malloc(sizeof(config_item));
-		strncpy(item->key, x, CONF_KEY_SIZE);
-		strncpy(item->value, y, CONF_KEY_SIZE);
-		append_config(cfg, item);
-	}
+	if ((file = malloc(st.st_size+1)) == NULL)
+		return -EMEM;
 
-	if(fclose(fd))
-		return -EFILE;
+	read(fd, file, st.st_size);
 
+	state = yy_scan_string(file, scanner);
+
+	if (yyparse(cfg, scanner))
+		return -EVAL;
+
+	yy_delete_buffer(state, scanner);
+	yylex_destroy(scanner);
 	return SUCCESS;
 }
 

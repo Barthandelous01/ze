@@ -9,6 +9,8 @@ AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_YACC
+AC_PROG_LEX
 
 # Checks for libraries.
 AC_CHECK_LIB([lmdb], [mdb_env_open])

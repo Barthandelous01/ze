@@ -34,6 +34,13 @@ TEXT EQUALS TEXT {
 	strncpy(x->value, $3, CONF_KEY_SIZE);
 	append_config(cfg, x);
 }
+| TEXT EQUALS {
+	config_item *x = malloc(sizeof(config_item) + 1);
+	memset(x, '\0', sizeof(config_item));
+	strncpy(x->key, $1, CONF_KEY_SIZE);
+	strncpy(x->value, "", CONF_KEY_SIZE);
+	append_config(cfg, x);
+}
 ;
 
 %%

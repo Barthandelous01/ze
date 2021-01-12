@@ -112,7 +112,7 @@ START_TEST(test_conf_normal)
 	FILE *fd = fopen(y, "w");
 	if(fd == NULL)
 		ck_abort_msg("Could not create file %s after deleting\n", y);
-	fprintf(fd, "TESTING=HELLO\nEMPTY=\n# HI=BYE");
+	fprintf(fd, "TESTING=HELLO\nEMPTY=\n /*HI=BYE*/");
 	if(fclose(fd) != 0)
 		ck_abort_msg("Could not close file %s\n", y);
 

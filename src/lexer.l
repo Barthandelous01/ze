@@ -15,12 +15,18 @@
 	 return TEXT;
 }
 
+\"[^"]*\" {
+	yylval.text = strndup(&yytext[1],strlen(yytext)-2);
+	return TEXT;
+}
+
 "=" { return EQUALS; }
+\/\*[^\0]*\*\/ ;
 [ \t] ;
 
 %%
 
 static void yyerror(const char *msg)
 {
-	fprintf(stderr, "Lexer error: %s\n", msg);
+fprintf(stderr, "Lexer error: %s\n", msg);
 }

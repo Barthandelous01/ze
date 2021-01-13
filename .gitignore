@@ -20,6 +20,7 @@
 /missing
 /stamp-h?
 /test-driver
+/ylwrap
 
 # build fragments
 *.o

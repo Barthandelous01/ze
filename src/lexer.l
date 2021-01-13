@@ -21,12 +21,14 @@
 }
 
 "=" { return EQUALS; }
-\/\*[^\0]*\*\/ ;
-[ \t] ;
+
+#[^\n]* ;
+[ \t\n] ;
+. ;
 
 %%
 
 static void yyerror(const char *msg)
 {
-fprintf(stderr, "Lexer error: %s\n", msg);
+	fprintf(stderr, "Lexer error: %s\n", msg);
 }

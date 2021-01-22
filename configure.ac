@@ -14,8 +14,6 @@ AC_PROG_LEX
 
 # Checks for libraries.
 AC_CHECK_LIB([lmdb], [mdb_env_open])
-PKG_CHECK_MODULES([CHECK], [check >= 0.13.0], [],
-		   [echo "Check not installed; tests will be unable to run"])
 
 # Checks for header files.
 AC_CHECK_HEADERS([string.h unistd.h fcntl.h])

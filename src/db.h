@@ -3,14 +3,17 @@
 
 #include <lmdb.h>
 
+/**
+ * An opaque database handle
+ */
 typedef struct db_context {
-	/* cursor to the DB */
+	/** cursor to the DB */
 	MDB_cursor *cursor;
-	/* The transaction (only commits at close_db()) */
+	/** The transaction (only commits at close_db()) */
 	MDB_txn *txn;
-	/* generic db handle */
+	/** generic db handle */
 	MDB_dbi dbi;
-	/* env handle. Must be allocated, opened, and closed seperately */
+	/** env handle. Must be allocated, opened, and closed seperately */
 	MDB_env *env;
 } db_context;
 

@@ -11,8 +11,9 @@
 #include "db.h"
 
 /**
- * init_db() - start the database
- * @DB: the context that is initialized
+ * start the database
+ *
+ * @param [in/out] DB: the context that is initialized
  *
  * Many DBs are fairly complicated to keep track of (commits, open
  * instances, etc) but LMDB is a cut above anything else I've
@@ -43,7 +44,9 @@ int init_db(db_context *DB)
 }
 
 /**
- * close_db() - shut down the database
+ * shut down the database
+ *
+ * @param[in] DB: The DB handle
  *
  * Cleans up the DB and frees memory.
  */
@@ -57,10 +60,11 @@ int close_db(db_context *DB)
 }
 
 /**
- * add_record() - add a key-value pair to the db
- * @DB the DB context
- * @key: the key to insert under
- * @value: the value to insert
+ * add a key-value pair to the db
+ *
+ * @param[in] DB: the DB context
+ * @param[in] key: the key to insert under
+ * @param[in] value: the value to insert
  *
  * The LMDB API is fairly complicated and unweildy, so
  * each of these "wrapper calls" takes the db_context
@@ -83,10 +87,11 @@ int add_record(db_context *DB, char *key, char *value)
 }
 
 /**
- * get_record() - retreive a value from a key in the db
- * @DB: the DB context
- * @key: the key to get the value of
- * @value: result buffer for the key
+ * retreive a value from a key in the db
+ *
+ * @param[in] DB: the DB context
+ * @param[in] key: the key to get the value of
+ * @param[out] value: result buffer for the key
  *
  * Returns SUCCESS on success, or a negative code on
  * failure.
@@ -124,9 +129,10 @@ int get_record(db_context *DB, char *key, char *value)
 }
 
 /**
- * delete_record() - delete a record from the db
- * @DB: the DB context
- * @key: the key to delete
+ * delete a record from the db
+ *
+ * @param[in] DB: the DB context
+ * @param[in] key: the key to delete
  *
  * The DB used by `ze` doesn't have multiple schema or
  * duplicate keys, so we only need the key to remove a

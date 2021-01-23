@@ -1,0 +1,35 @@
+# Generic settings
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = "ze"
+PROJECT_NUMBER         = 0.2.0
+OUTPUT_DIRECTORY       =
+CREATE_SUBDIRS         = NO
+ALLOW_UNICODE_NAMES    = NO
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+FULL_PATH_NAMES        = NO
+TAB_SIZE               = 8
+OPTIMIZE_OUTPUT_FOR_C  = YES
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+INPUT                  = ../src
+
+# Source config
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+
+# Man page outputs
+GENERATE_MAN = YES
+
+# HTML output
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+
+# LaTeX output
+GENERATE_LATEX         = YES
+LATEX_OUTPUT           = latex
+
+# man page output
+GENERATE_MAN           = YES
+MAN_OUTPUT             = man
+MAN_EXTENSION          = .3

@@ -38,3 +38,8 @@
 GPATH
 GTAGS
 GRTAGS
+
+# Doxygen documentation
+/docs/html/
+/docs/latex/
+/docs/man/

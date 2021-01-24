@@ -19,10 +19,11 @@
 #include "conf.h"
 
 /**
- * home_prefix() - $HOME-prefix a filepath
- * @postfix: the filepath to prefix. It should
+ * $HOME-prefix a filepath
+ *
+ * @param[in] postfix: the filepath to prefix. It should
  *           start with a /
- * @result: the buffer written into. It is assumed to
+ * @param[out] result: the buffer written into. It is assumed to
  *          have 2*PATH_BUFSIZE bytes maximum; otherwise,
  *          data will be lost. However, this should be
  *          enough for 99.9% of use cases.
@@ -39,9 +40,10 @@ void home_prefix(char *postfix, char *result)
 }
 
 /**
- * raw_print() - print a raw file
- * @pathname: the path to the zettel to print
- * @cfg: config map handle
+ * Print a raw file
+ *
+ * @param[in] pathname: the path to the zettel to print
+ * @param[in] cfg: config map handle
  *
  * Efficiently print a zettel file. Uses buffering (similar to
  * cat(1)) in order to print the zettel as fast as possible.
@@ -84,9 +86,10 @@ static int raw_print(config *cfg, char *pathname)
 }
 
 /**
- * print_zettel() - print a zettel
- * @cfg: unused. To pass config to.
- * @pathname: the path of the zettel to print. Should
+ * Print a zettel
+ *
+ * @param[in] cfg: To pass config to.
+ * @param[in] pathname: the path of the zettel to print. Should
  *            have a leading /
  */
 int print_zettel(config *cfg, char *pathname)
@@ -127,10 +130,16 @@ int print_zettel(config *cfg, char *pathname)
 }
 
 /**
- * edit_zettel() - edit a zettel
- * @cfg: unused. To pass config to.
- * @pathname: the path of the zettel to edit.
+ * Edit a zettel
+ *
+ * @param[in] cfg: To pass config to.
+ * @param[in] pathname: the path of the zettel to edit.
  *            Is canonicalized; lead with /
+ *
+ * edit_zettel() is the driver function for editing zettel, as may
+ * be obvious. It forks off to a seperate thread and runs the
+ * EDITOR variable, whether it be in the config file or the
+ * environment variable.
  */
 int edit_zettel(void *cfg, char *pathname)
 {
@@ -159,10 +168,11 @@ int edit_zettel(void *cfg, char *pathname)
 }
 
 /**
- * check_dir() - ensure directories exist
- * @dir: the directory to check
+ * Ensure directories exist
  *
- * do a quick and dirty check to see if `dir` exists
+ * @param[in] dir: the directory to check
+ *
+ * Do a quick and dirty check to see if `dir` exists
  */
 static void check_dir(char *dir)
 {
@@ -179,7 +189,7 @@ static void check_dir(char *dir)
 }
 
 /**
- * ensure_directories() - run a check on each directory needed by ze
+ * Run a check on each directory needed by ze
  *
  * A relatively inelegant way to make sure directories exist
  * (as C does not, unfortunately, have a ensure-directories function as

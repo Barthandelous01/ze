@@ -21,8 +21,9 @@ typedef struct id_file {
 static id_file *id_fd;
 
 /**
- * init_id() - set up the magic id system
- * @filepath: the file that the ID is stored in
+ * set up the magic id system
+ *
+ * @param[in] filepath: the file that the ID is stored in
  *
  * init_id() fills in the magic stack-allocated id_fd
  * global that the entire id.c file works with. It keeps
@@ -67,7 +68,7 @@ int init_id (char *filepath)
 
 
 /**
- * close_id() - close the magic id system
+ * close the magic id system
  *
  * close_id() shuts down all of the stuff inside of
  * id_fd, writes the ID update, and closes file descriptors.
@@ -97,7 +98,7 @@ int close_id (void)
 }
 
 /**
- * incriment_id() - add to the ID counter
+ * add to the ID counter
  *
  * incriment_id() is basically id_fd.id++, but without having
  * to directly address the global, and is more obvious to
@@ -110,7 +111,7 @@ static inline void incriment_id()
 }
 
 /**
- * get_id_int() - get the current ID integer
+ * get the current ID integer
  *
  * get_id_int() returns the current ID ingeter.
  * The reason for it and increment_id() is to keep from
@@ -123,8 +124,9 @@ static inline unsigned int get_id_int()
 }
 
 /**
- * get_id() - get a new ID string
- * @result_buf: the stack buffer where the result is
+ * get a new ID string
+ *
+ * @param[out] result_buf: the stack buffer where the result is
  *              written to
  *
  * get_id() is the main userspace function from id. It

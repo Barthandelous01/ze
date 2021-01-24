@@ -39,9 +39,10 @@ static void top_level_error(char *format, int code)
 }
 
 /**
- * list_zettel() - list zettel in a readable format
- * @DB: the database of zettel
- * @cfg: config struct
+ * List zettel in a readable format
+ *
+ * @param[in] DB: the database of zettel
+ * @param[in] cfg: config struct
  *
  * List zettel in a coherent format. Uses the DB in a
  * relatively low-level way.
@@ -69,9 +70,10 @@ static int list_zettel(db_context *DB, config *cfg)
 }
 
 /**
- * print_index() - print index zettel
- * @cfg: the config struct to use to check for default zettel
- * @DB: the database of zettel
+ * Print index zettel
+ *
+ * @param[in] cfg: the config struct to use to check for default zettel
+ * @param[in] DB: the database of zettel
  *
  * print_index() prints the index zettel, which defaults to
  * 000001, checking if a different index zettel has been set in
@@ -96,13 +98,14 @@ static void print_index(config *cfg, db_context *DB)
 }
 
 /**
- * get_zettel() - get the path of a zettel
- * @DB: the database handle
- * @id: the id to print
- * @path: the resultant path of the zettel
+ * Get the path of a zettel
+ *
+ * @param[in] DB: the database handle
+ * @param[in] id: the id to print
+ * @param[out] path: the resultant path of the zettel
  *
  * get_zettel() does a lookup in the db of zettel and returns
- * the full pathname of
+ * the full pathname of the given ID.
  */
 static int get_zettel(db_context *DB, char *id, char *path)
 {
@@ -118,10 +121,11 @@ static int get_zettel(db_context *DB, char *id, char *path)
 }
 
 /**
- * modify_zettel() - edit the zettel given by pathname
- * @DB: the database
- * @cfg: config context
- * @pathname: the pathname to edit. HOME CANONICALIZED
+ * Edit the zettel given by pathname
+ *
+ * @param[in] DB: the database
+ * @param[in] cfg: config context
+ * @param[in] pathname: the pathname to edit. HOME CANONICALIZED
  *
  * modify_zettel() is basically an interace-module frontend to
  * io's edit_zettel(). Bubbles all errors up directly.
@@ -143,9 +147,10 @@ static int modify_zettel(db_context *DB, config *cfg, char *id)
 }
 
 /**
- * create_zettel() - add a zettel to the DB
- * @DB: the database context
- * @cfg: config context
+ * Add a zettel to the DB
+ *
+ * @param[in] DB: the database context
+ * @param[in] cfg: config context
  *
  * create_zettel() creates the next serial zettel and then offloads the work of
  * writing it to edit_zettel(). Bubbles most errors up to caller unchanged, or
@@ -183,8 +188,21 @@ static int create_zettel(db_context *DB, config *cfg)
 	return SUCCESS;
 }
 
+/**
+ * Entry point for ze
+ *
+ * @param[in] argc: the number of arguments given
+ * @param[in] argv: the vector of arguments
+ *
+ * main() is broken into roughly four parts. Part one is initialization.
+ * main() loads the config file, the id file, and the DB file.
+ * Second, main() performs argument parsing. When argument parsing is done,
+ * main() prints any other zettel passed to it. Finally, main()
+ * de-inits the same three subsystems.
+ */
 int main (int argc, char **argv)
 {
+	/* The start of initialization */
 	int res, ch;
 	config cfg;
 
@@ -201,6 +219,7 @@ int main (int argc, char **argv)
 	if((res = init_db(&db)))
 		top_level_error(ERRMAIN"init_db(): %d\n", res);
 
+	/* The start of argument parsing */
 	static int quiet = 0;
 	static struct option longopts[] = {
 		{"version",    no_argument,       NULL, 'V'},
@@ -239,6 +258,7 @@ int main (int argc, char **argv)
 		}
 	}
 
+	/* generic printing section */
 	if (quiet == 0 && (argc >= 2)) {
 		char zettel[2*PATH_BUFSIZE];
 		for(int j = 1; j < argc; j++) {
@@ -256,6 +276,7 @@ int main (int argc, char **argv)
 		print_index(&cfg, &db);
 	}
 
+	/* de-init section */
 	if((res = close_id()))
 		top_level_error(ERRMAIN"close_id(): %d\n", res);
 

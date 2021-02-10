@@ -1,4 +1,4 @@
-.TH ZE "1" "November 2020" "ze 0.1.0" "User Commands"
+.TH ZE "1" "February 2021" "ze 0.2.0" "User Commands"
 .SH NAME
 ze \- a Unix-y implimentation of a zettelkasten
 .SH SYNOPSIS
@@ -39,7 +39,7 @@ Print the given IDs.
 .BR ze(1)
 can easily be configured using the config file found at
 .BR $HOME/.ze/ze.conf.
-It uses a straightforward key=value pair system (note the lack of spaces),
+It uses a straightforward key=value pair system, allows quoted strings,
 and supports
 .BR #
 as a comment character.
@@ -51,13 +51,13 @@ as a comment character.
 .br
 # Set the editor
 .br
-EDITOR=/usr/bin/emacs
+EDITOR = "/usr/bin/emacs"
 .br
 # Set the pager
 .br
 # Might prefer the default, so leave it commented
 .br
-# PAGER=/usr/bin/less
+# PAGER = /usr/bin/less
 .br
 \&
 .in
@@ -87,6 +87,6 @@ The character to seperate IDs and names from --list. Defaults to " "
 .TP
 \fB INDEX_NODE \fR\&
 The index node to be printed if no args are given. Defaults to "000001"
-
-
-
+.TP
+\fB NO_IDENTIFY_ZETTEL\fR\&
+If defined, ze will not print the ID of a newly created zettel.

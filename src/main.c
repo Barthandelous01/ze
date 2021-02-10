@@ -13,16 +13,18 @@
 
 static void version()
 {
-	printf("%s", PACKAGE_STRING "\nCopyright (C) 2020-2021 Barthandelous01\n\
-License RBSD 3-Clause License.\n\
-This is free software; you are free to change and redistribute it.\n\
-There is NO WARRANTY, to the extent permitted by law.\n");
+	printf("%s",
+		PACKAGE_STRING "\nCopyright (C) 2020-2021 Barthandelous01\n"
+		"License RBSD 3-Clause License."
+		"This is free software; you are free to change and redistribute it.\n"
+		"There is NO WARRANTY, to the extent permitted by law.\n");
 	exit(EXIT_SUCCESS);
 }
 
 static void help()
 {
-	printf("%s\n", PACKAGE_STRING "\nCopyright (C) 2020-2021 Barthandelous01\n"
+	printf("%s\n",
+		PACKAGE_STRING "\nCopyright (C) 2020-2021 Barthandelous01\n"
 		"\n"
 		"OPTIONS:\n"
 		"\t-v, --version      Print version information\n"
@@ -184,6 +186,11 @@ static int create_zettel(db_context *DB, config *cfg)
 
 	if ((res = edit_zettel(cfg, tmp)) != SUCCESS)
 		return res;
+
+	/* We're done with conf_ext, and we're only checking if this is */
+	/* defined. No need to use the config key value for now. */
+	if ((res = get_config(cfg, "NO_IDENTIFY_ZETTEL", conf_ext)) != SUCCESS)
+		printf("Newly created zettel id: %s\n", id);
 
 	return SUCCESS;
 }
